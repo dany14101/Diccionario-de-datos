@@ -2,6 +2,7 @@
 
 
 //Estructuras 
+/*
 typedef struct
 {
 	char nom[50];
@@ -9,24 +10,25 @@ typedef struct
 	long puntatri;
 	long puntsig;
 }Enti;
+*/
 //Funciones principales
 void agrega_nuevo();
 void imprimir();
 //Funciones de los menus
 void menu2();
-void men_ent();
-void men_atri();
-void men_dat();
+void men_ent(FILE *arch);
+void men_atri(FILE *arch);
+void men_dat(FILE *arch);
 //Funciones de entidades
-void agrega_enti(char nom[]);
-void elimina_enti(char nom[]);
-void imprimir_enti(char nom[]);
-void modifica_enti(char nom[]);
+void agrega_enti(FILE *arch,char nom[]);
+void elimina_enti(FILE *arch,char nom[]);
+void imprimir_enti(FILE *arch,char nom[]);
+void modifica_enti(FILE *arch,char nom[]);
 //Funciones de atributos
-void agrega_atri(char nom[]);
-void elimina_atri(char nom[]);
-void imprimir_atri(char nom[]);
-void modifica_atri(char nom[]);
+void agrega_atri(FILE *arch,char nom[]);
+void elimina_atri(FILE *arch,char nom[]);
+void imprimir_atri(FILE *arch,char nom[]);
+void modifica_atri(FILE *arch,char nom[]);
 //Funciones de datos
 int main() 
 {
@@ -89,11 +91,8 @@ void imprimir()
 	arch=fopen(nom,"r");
 	if(arch!=NULL)
 	{
-		
+		//fscanf(arch,%l,)
 	}
-	/*
-	Imprime los datos 
-	*/
 	else
 	{
 		printf("Error al abrir el archivo\n");
@@ -105,9 +104,16 @@ void imprimir()
 //Segundo menu de atributos
 void menu2()
 {
+    FILE *arch;
 	char nom[50];
 	printf("Dame el nombre del diccionario que quieres usar:");
 	scanf("%s",nom);
+    arch=fopen(nom,"r");
+    if(arch==NULL)
+    {
+        printf("Error al abrir el archivo\n\n");
+        return;
+    }
 	int op=0;
 	while(op!=4)
 	{
@@ -121,13 +127,13 @@ void menu2()
 		switch(op)
 		{
 			case 1:
-				men_ent();
+				men_ent(arch);
 				break;
 			case 2:
-				men_atri();
+				men_atri(arch);
 				break;
 			case 3:
-				men_dat();
+				men_dat(arch);
 				break;
 			case 4:
 				break;
@@ -136,7 +142,7 @@ void menu2()
 }
 
 //Menu de entidades
-void men_ent()
+void men_ent(FILE *arch)
 {
 	char nom[50];
 	printf("Dame el nombre la entidad a usar:");
@@ -155,16 +161,16 @@ void men_ent()
 		switch(op)
 		{
 		case 1:
-			agrega_enti(nom);
+			agrega_enti(arch,nom);
 			break;
 		case 2:
-			elimina_enti(nom);
+			elimina_enti(arch,nom);
 			break;
 		case 3:
-			imprimir_enti(nom);
+			imprimir_enti(arch,nom);
 			break;
 		case 4:
-			modifica_enti(nom);
+			modifica_enti(arch,nom);
 			break;
 		case 5:
 			break;
@@ -173,7 +179,7 @@ void men_ent()
 }
 
 //Menu de atributos
-void men_atri()
+void men_atri(FILE *arch)
 {
 	char nom[50];
 	printf("Dame el nombre el atributo a usar:");
@@ -192,16 +198,16 @@ void men_atri()
 		switch(op)
 		{
 		case 1:
-			agrega_atri(nom);
+			agrega_atri(arch,nom);
 			break;
 		case 2:
-			elimina_atri(nom);
+			elimina_atri(arch,nom);
 			break;
 		case 3:
-			imprimir_atri(nom);
+			imprimir_atri(arch,nom);
 			break;
 		case 4:
-			modifica_atri(nom);
+			modifica_atri(arch,nom);
 			break;
 		case 5:
 			break;
@@ -210,7 +216,7 @@ void men_atri()
 }
 
 //Menu de datos
-void men_dat()
+void men_dat(FILE *arch)
 {
 	
 }
@@ -220,24 +226,24 @@ void men_dat()
 //Funciones de entidades
 
 //Agrega entidad
-void agrega_enti(char nom[])
+void agrega_enti(FILE *arch,char nom[])
 {
 	
 }
 //Elimina entidad
-void elimina_enti(char nom[])
+void elimina_enti(FILE *arch,char nom[])
 {
 	
 }
 
 //Imprime Enti
-void imprimir_enti(char nom[])
+void imprimir_enti(FILE *arch,char nom[])
 {
 	
 }
 
 //modifica entidad
-void modifica_enti(char nom[])
+void modifica_enti(FILE *arch,char nom[])
 {
 	
 }
@@ -246,24 +252,24 @@ void modifica_enti(char nom[])
 //Funciones de atributos
 
 //Agrega entidad
-void agrega_atri(char nom[])
+void agrega_atri(FILE *arch,char nom[])
 {
 	
 }
 //Elimina entidad
-void elimina_atri(char nom[])
+void elimina_atri(FILE *arch,char nom[])
 {
 	
 }
 
 //Imprime Enti
-void imprimir_atri(char nom[])
+void imprimir_atri(FILE *arch,char nom[])
 {
 	
 }
 
 //modifica entidad
-void modifica_atri(char nom[])
+void modifica_atri(FILE *arch,char nom[])
 {
 	
 }
