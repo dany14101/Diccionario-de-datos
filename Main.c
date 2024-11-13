@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#define puntf  -1
 
 //Estructuras 
 typedef struct
@@ -64,6 +63,7 @@ int main()
 //Crea un nuevo diccionario inicializado
 void agrega_nuevo()
 {
+	long puntf=-1;
 	FILE *arch;
 	char nom[50];
 	printf("Dame el nombre del nuevo diccionario:");
@@ -71,7 +71,7 @@ void agrega_nuevo()
 	arch=fopen(nom,"w");
 	if(arch!=NULL)
 	{
-	fwrite(puntf,sizeof(long),1,arch);
+	fwrite(&puntf,sizeof(long),1,arch);
 	fclose(arch);
 	}
 	else
@@ -267,22 +267,37 @@ void men_dat(FILE *arch)
 //Agrega entidad
 void agrega_enti(FILE *arch,char nom[])
 {
-
+	long puntf=-1,val,valant;
 	int op=1;
 	Enti entidad;
-	char nomb [50];
-	printf("Dame el nombre de la entidad:");
-	scanf("%s",nomb);
-	while(entidad.puntsig!=-1)
+	fseek(arch, 0, SEEK_SET);
+	fscanf(arch,"%ld",&entidad.puntsig);
+	if(entidad.puntsig==-1)
 	{
-		fscanf(arch,"%s%ld%ld%ld",entidad.nom,&entidad.pundata,&entidad.puntatri,&entidad.puntsig);
-		if(strcmp(nom,entidad.nom)<0)
+		fwrite(nom,50,1,arch);
+		fwrite(&puntf,sizeof(long),1,arch);
+		fwrite(&puntf,sizeof(long),1,arch);
+		fwrite(&puntf,sizeof(long),1,arch);
+		val=ftell(arch);
+		fseek(arch, 0, SEEK_SET);
+		fwrite(&val,sizeof(long),1,arch);
+	}
+	else
+	{
+		fseek(arch, 0, SEEK_SET);
+		while(entidad.puntsig!=-1)
 		{
-			fseek(arch, 0, SEEK_END);
-			fwrite(nomb,50,1,arch);
-			fwrite(puntf,sizeof(long),1,arch);
-			fwrite(puntf,sizeof(long),1,arch);
-			//aqui cambia el puntero en orden
+			fscanf(arch,"%s%ld%ld%ld",entidad.nom,&entidad.pundata,&entidad.puntatri,&entidad.puntsig);
+			if(strcmp(nom,entidad.nom)<0)
+			{
+				valant=ftell(arch);
+				val=(SEEK_END);
+				fseek(arch, 0, SEEK_END);
+				fwrite(nom,50,1,arch);
+				fwrite(&puntf,sizeof(long),1,arch);
+				fwrite(&puntf,sizeof(long),1,arch);
+				fwrite(&valant,sizeof(long),1,arch);
+			}
 		}
 	}				
 }
