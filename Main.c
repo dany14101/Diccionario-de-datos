@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
+#include <stddef.h>
 //Estructuras 
 typedef struct
 {
@@ -268,47 +268,50 @@ void men_dat(FILE *arch)
 void agrega_enti(FILE *arch,char nom[])
 {
 	long puntf=-1,val,valant;
-	int op=1;
 	Enti entidad;
 	fseek(arch, 0, SEEK_SET);
-	fscanf(arch,"%ld",&entidad.puntsig);
+	fread(&entidad.puntsig,sizeof(long),1,arch);
 	if(entidad.puntsig==-1)
 	{
-		fwrite(nom,50,1,arch);
+		fseek(arch, 0, SEEK_END);
+		fwrite(nom,sizeof(entidad.nom),1,arch);
 		fwrite(&puntf,sizeof(long),1,arch);
 		fwrite(&puntf,sizeof(long),1,arch);
 		fwrite(&puntf,sizeof(long),1,arch);
 		val=ftell(arch);
 		fseek(arch, 0, SEEK_SET);
 		fwrite(&val,sizeof(long),1,arch);
+		fflush(arch);
 	}
 	else
 	{
 		fseek(arch, entidad.puntsig, SEEK_SET);
-		while(fscanf(arch,"%s%ld%ld%ld",entidad.nom,&entidad.pundata,&entidad.puntatri,&entidad.puntsig))
+		while(fread(&entidad,sizeof(Enti),1,arch)==1)
 		{	
 			if(strcmp(nom,entidad.nom)<0)
 			{
-				valant=ftell(arch);
-				fseek(arch, 0, SEEK_END);
-				fwrite(nom,50,1,arch);
-				fwrite(&puntf,sizeof(long),1,arch);
-				fwrite(&puntf,sizeof(long),1,arch);
-				fwrite(&valant,sizeof(long),1,arch);
-				fseek(arch, valant-strlen(entidad.nom)-3*sizeof(long),SEEK_SET);
-				val=ftell(arch);
-				fseek(arch, 0, SEEK_SET);
-				fwrite(&val,sizeof(long),1,arch);
-				return;
+				  valant = ftell(arch) - sizeof(Enti);
+                fseek(arch, 0, SEEK_END);
+                val = ftell(arch);
+
+                fwrite(nom, sizeof(entidad.nom), 1, arch);
+                fwrite(&puntf, sizeof(long), 1, arch);
+                fwrite(&puntf, sizeof(long), 1, arch);
+                fwrite(&entidad.puntsig, sizeof(long), 1, arch);
+
+                fseek(arch, valant + offsetof(Enti, puntsig), SEEK_SET);
+                fwrite(&val, sizeof(long), 1, arch);
+                fflush(arch);
+                return;
 			}
 		}
 	}	
 	valant=ftell(arch);
 	fseek(arch,0,SEEK_END);	
-	fwrite(nom,50,1,arch);
+	fwrite(nom,sizeof(entidad.nom),1,arch);
 	fwrite(&puntf,sizeof(long),1,arch);
 	fwrite(&puntf,sizeof(long),1,arch);
-	fwrite(&valant,sizeof(long),1,arch);
+	fwrite(&puntf,sizeof(long),1,arch);
 	fseek(arch,valant-strlen(entidad.nom)-3*sizeof(long),SEEK_SET);  		
 	fwrite(&val,sizeof(long),1,arch);
 }
