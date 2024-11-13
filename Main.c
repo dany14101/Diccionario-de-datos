@@ -1,8 +1,8 @@
 #include <stdio.h>
-
+#include <string.h>
+#define puntf -1
 
 //Estructuras 
-/*
 typedef struct
 {
 	char nom[50];
@@ -10,7 +10,6 @@ typedef struct
 	long puntatri;
 	long puntsig;
 }Enti;
-*/
 //Funciones principales
 void agrega_nuevo();
 void imprimir();
@@ -72,7 +71,7 @@ void agrega_nuevo()
 	arch=fopen(nom,"w");
 	if(arch!=NULL)
 	{
-	fwrite("-1",sizeof(long),1,arch);
+	fwrite(&puntf,sizeof(long),1,arch);
 	fclose(arch);
 	}
 	else
@@ -84,14 +83,53 @@ void agrega_nuevo()
 //Imprime un diccionario
 void imprimir()
 {
+	long punt;
 	FILE *arch;
+	Enti entidad;
 	char nom[50];
 	printf("Dame el nombre del archivo que quieres abrir:");
 	scanf("%s",nom);
 	arch=fopen(nom,"r");
 	if(arch!=NULL)
 	{
-		//fscanf(arch,%l,)
+		fscanf(arch,"%ld",&punt);
+		if(punt==-1)
+		{
+			printf("No hay nada en el diccionario\n");
+		}
+		else
+		{
+			while(entidad.puntsig!=-1)
+			{
+				fscanf(arch,"%s%ld%ld%ld",entidad.nom,&entidad.pundata,&entidad.puntatri,&entidad.puntsig);
+				printf("Nombre: %s\n",nom);
+				if(entidad.pundata==-1)
+				{
+					printf("No tiene datos\n");
+				}
+				else
+				{
+					//Agrega datos
+				}
+				if(entidad.puntatri==-1)
+				{
+					printf("No tiene atributos\n");
+				}
+				else
+				{
+					//Agrega atributos
+				}
+				if(entidad.puntsig==-1)
+				{
+					printf("Termino la lista\n");
+					return;
+				}
+				else
+				{
+					fseek(arch, entidad.puntsig, SEEK_CUR);
+				}
+			}
+		}
 	}
 	else
 	{
@@ -139,6 +177,7 @@ void menu2()
 				break;
 		}
 	}
+	fclose(arch);
 }
 
 //Menu de entidades
@@ -228,7 +267,24 @@ void men_dat(FILE *arch)
 //Agrega entidad
 void agrega_enti(FILE *arch,char nom[])
 {
-	
+
+	int op=1;
+	Enti entidad;
+	char nomb [50];
+	printf("Dame el nombre de la entidad:");
+	scanf("%s",nomb);
+	while(entidad.puntsig!=-1)
+	{
+		fscanf(arch,"%s%ld%ld%ld",entidad.nom,&entidad.pundata,&entidad.puntatri,&entidad.puntsig);
+		if(strcmp(nom,entidad.nom)<0)
+		{
+			fseek(arch, 0, SEEK_END);
+			fwrite(nomb,50,1,arch);
+			fwrite(puntf,sizeof(long),1,arch);
+			fwrite(puntf,sizeof(long),1,arch);
+			//aqui cambia el puntero en orden
+		}
+	}				
 }
 //Elimina entidad
 void elimina_enti(FILE *arch,char nom[])
