@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#define puntf -1
+#define puntf  -1
 
 //Estructuras 
 typedef struct
@@ -71,7 +71,7 @@ void agrega_nuevo()
 	arch=fopen(nom,"w");
 	if(arch!=NULL)
 	{
-	fwrite(&puntf,sizeof(long),1,arch);
+	fwrite(puntf,sizeof(long),1,arch);
 	fclose(arch);
 	}
 	else
