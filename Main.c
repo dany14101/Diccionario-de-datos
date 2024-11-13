@@ -284,22 +284,33 @@ void agrega_enti(FILE *arch,char nom[])
 	}
 	else
 	{
-		fseek(arch, 0, SEEK_SET);
-		while(entidad.puntsig!=-1)
-		{
-			fscanf(arch,"%s%ld%ld%ld",entidad.nom,&entidad.pundata,&entidad.puntatri,&entidad.puntsig);
+		fseek(arch, entidad.puntsig, SEEK_SET);
+		while(fscanf(arch,"%s%ld%ld%ld",entidad.nom,&entidad.pundata,&entidad.puntatri,&entidad.puntsig))
+		{	
 			if(strcmp(nom,entidad.nom)<0)
 			{
 				valant=ftell(arch);
-				val=(SEEK_END);
 				fseek(arch, 0, SEEK_END);
 				fwrite(nom,50,1,arch);
 				fwrite(&puntf,sizeof(long),1,arch);
 				fwrite(&puntf,sizeof(long),1,arch);
 				fwrite(&valant,sizeof(long),1,arch);
+				fseek(arch, valant-strlen(entidad.nom)-3*sizeof(long),SEEK_SET);
+				val=ftell(arch);
+				fseek(arch, 0, SEEK_SET);
+				fwrite(&val,sizeof(long),1,arch);
+				return;
 			}
 		}
-	}				
+	}	
+	valant=ftell(arch);
+	fseek(arch,0,SEEK_END);	
+	fwrite(nom,50,1,arch);
+	fwrite(&puntf,sizeof(long),1,arch);
+	fwrite(&puntf,sizeof(long),1,arch);
+	fwrite(&valant,sizeof(long),1,arch);
+	fseek(arch,valant-strlen(entidad.nom)-3*sizeof(long),SEEK_SET);  		
+	fwrite(&val,sizeof(long),1,arch);
 }
 //Elimina entidad
 void elimina_enti(FILE *arch,char nom[])
@@ -322,24 +333,24 @@ void modifica_enti(FILE *arch,char nom[])
 
 //Funciones de atributos
 
-//Agrega entidad
+//Agrega atributo
 void agrega_atri(FILE *arch,char nom[])
 {
 	
 }
-//Elimina entidad
+//Elimina atributo
 void elimina_atri(FILE *arch,char nom[])
 {
 	
 }
 
-//Imprime Enti
+//Imprime atributo
 void imprimir_atri(FILE *arch,char nom[])
 {
 	
 }
 
-//modifica entidad
+//modifica atributo
 void modifica_atri(FILE *arch,char nom[])
 {
 	
