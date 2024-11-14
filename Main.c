@@ -273,7 +273,7 @@ void agrega_enti(FILE *arch,char nom[])
 	fread(&entidad.puntsig,sizeof(long),1,arch);
 	if(entidad.puntsig==-1)
 	{
-		fseek(arch, 0, SEEK_END);
+		fseek(arch, 0, EOF);
 		fwrite(nom,sizeof(entidad.nom),1,arch);
 		fwrite(&puntf,sizeof(long),1,arch);
 		fwrite(&puntf,sizeof(long),1,arch);
@@ -282,6 +282,7 @@ void agrega_enti(FILE *arch,char nom[])
 		fseek(arch, 0, SEEK_SET);
 		fwrite(&val,sizeof(long),1,arch);
 		fflush(arch);
+		return;
 	}
 	else
 	{
