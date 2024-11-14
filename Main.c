@@ -292,6 +292,7 @@ void agrega_enti(FILE *arch,char nom[])
 		{	
 			if(strcmp(nom,entidad.nom)<0)
 			{
+				pos=ftell(arch);
 				valant = ftell(arch) - sizeof(Enti);
                 fseek(arch, 0, SEEK_END);
                 val = ftell(arch);
@@ -300,8 +301,9 @@ void agrega_enti(FILE *arch,char nom[])
                 fwrite(&puntf, sizeof(long), 1, arch);
                 fwrite(&puntf, sizeof(long), 1, arch);
                 fwrite(&entidad.puntsig, sizeof(long), 1, arch);
-
+				pos=ftell(arch);
                 fseek(arch, valant + offsetof(Enti, puntsig), SEEK_SET);
+				pos=ftell(arch);
                 fwrite(&val, sizeof(long), 1, arch);
                 fflush(arch);
                 return;
@@ -331,13 +333,13 @@ void elimina_enti(FILE *arch,char nom[])
 		{
 			val = ftell(arch-sizeof(Enti)-sizeof(Enti));
 			op=1;
-			fscanf(arch,"%50s%ld%ld",act.nom,act.pundata,act.puntatri);
-			fwrite(entidad.puntsig,sizeof(long),1,arch);
+			fscanf(arch,"%50s%ld%ld",act.nom,&act.pundata,&act.puntatri);
+			fwrite(&entidad.puntsig,sizeof(long),1,arch);
 		}
 	}
 	if(op==0)
 	{
-		printf("No esta la entidad que quieres eliminar");
+		printf("No esta la entidad que quieres eliminar\n\n");
 	}
 }
 
