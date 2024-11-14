@@ -146,7 +146,7 @@ void menu2()
 	char nom[50];
 	printf("Dame el nombre del diccionario que quieres usar:");
 	scanf("%s",nom);
-    arch=fopen(nom,"r");
+    arch=fopen(nom,"r+");
     if(arch==NULL)
     {
         printf("Error al abrir el archivo\n\n");
