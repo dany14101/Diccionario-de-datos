@@ -290,7 +290,7 @@ void agrega_enti(FILE *arch,char nom[])
 		{	
 			if(strcmp(nom,entidad.nom)<0)
 			{
-				  valant = ftell(arch) - sizeof(Enti);
+				valant = ftell(arch) - sizeof(Enti);
                 fseek(arch, 0, SEEK_END);
                 val = ftell(arch);
 
@@ -312,8 +312,9 @@ void agrega_enti(FILE *arch,char nom[])
 	fwrite(&puntf,sizeof(long),1,arch);
 	fwrite(&puntf,sizeof(long),1,arch);
 	fwrite(&puntf,sizeof(long),1,arch);
-	fseek(arch,valant-strlen(entidad.nom)-3*sizeof(long),SEEK_SET);  		
+	fseek(arch,valant-offsetof(Enti,puntsig),SEEK_SET);  		
 	fwrite(&val,sizeof(long),1,arch);
+	fflush(arch);
 }
 //Elimina entidad
 void elimina_enti(FILE *arch,char nom[])
