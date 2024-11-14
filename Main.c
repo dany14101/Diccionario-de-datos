@@ -267,13 +267,13 @@ void men_dat(FILE *arch)
 //Agrega entidad
 void agrega_enti(FILE *arch,char nom[])
 {
-	long puntf=-1,val,valant;
+	long puntf=-1,val,valant,pos;
 	Enti entidad;
 	fseek(arch, 0, SEEK_SET);
 	fread(&entidad.puntsig,sizeof(long),1,arch);
 	if(entidad.puntsig==-1)
 	{
-		fseek(arch, 0, EOF);
+		fseek(arch, 0, SEEK_END);
 		fwrite(nom,sizeof(entidad.nom),1,arch);
 		fwrite(&puntf,sizeof(long),1,arch);
 		fwrite(&puntf,sizeof(long),1,arch);
@@ -281,6 +281,7 @@ void agrega_enti(FILE *arch,char nom[])
 		val=ftell(arch);
 		fseek(arch, 0, SEEK_SET);
 		fwrite(&val,sizeof(long),1,arch);
+		pos=ftell(arch);
 		fflush(arch);
 		return;
 	}
@@ -320,7 +321,24 @@ void agrega_enti(FILE *arch,char nom[])
 //Elimina entidad
 void elimina_enti(FILE *arch,char nom[])
 {
-	
+	int op=0;
+	Enti entidad,act;
+	long puntf=-1,val,valant,pos;
+	fseek(arch, sizeof(long), SEEK_SET);
+	while(fread(&entidad,sizeof(Enti),1,arch)==1&&strcmp(entidad.nom,nom)!=0)
+	{
+		if(strcmp(entidad.nom,nom)==0)
+		{
+			val = ftell(arch-sizeof(Enti)-sizeof(Enti));
+			op=1;
+			fscanf(arch,"%50s%ld%ld",act.nom,act.pundata,act.puntatri);
+			fwrite(entidad.puntsig,sizeof(long),1,arch);
+		}
+	}
+	if(op==0)
+	{
+		printf("No esta la entidad que quieres eliminar");
+	}
 }
 
 //Imprime Enti
