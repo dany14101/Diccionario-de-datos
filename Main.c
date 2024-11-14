@@ -282,7 +282,6 @@ void agrega_enti(FILE *arch,char nom[])
 		fseek(arch, 0, SEEK_SET);
 		fwrite(&val,sizeof(long),1,arch);
 		pos=ftell(arch);
-		fflush(arch);
 		return;
 	}
 	else
@@ -305,7 +304,6 @@ void agrega_enti(FILE *arch,char nom[])
                 fseek(arch, valant + offsetof(Enti, puntsig), SEEK_SET);
 				pos=ftell(arch);
                 fwrite(&val, sizeof(long), 1, arch);
-                fflush(arch);
                 return;
 			}
 		}
@@ -318,7 +316,6 @@ void agrega_enti(FILE *arch,char nom[])
 	fwrite(&puntf,sizeof(long),1,arch);
 	fseek(arch,valant-offsetof(Enti,puntsig),SEEK_SET);  		
 	fwrite(&val,sizeof(long),1,arch);
-	fflush(arch);
 }
 //Elimina entidad
 void elimina_enti(FILE *arch,char nom[])
