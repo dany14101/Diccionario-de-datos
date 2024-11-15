@@ -83,57 +83,36 @@ void agrega_nuevo()
 //Imprime un diccionario
 void imprimir()
 {
-	long punt;
+	long punt,cab;
 	FILE *arch;
 	Enti entidad;
 	char nom[50];
 	printf("Dame el nombre del archivo que quieres abrir:");
 	scanf("%s",nom);
 	arch=fopen(nom,"r");
-	if(arch!=NULL)
+	fseek(arch,0,SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	printf("%ld\n",cab);
+	if(cab==-1)
 	{
-		fscanf(arch,"%ld",&punt);
-		if(punt==-1)
-		{
-			printf("No hay nada en el diccionario\n");
-		}
-		else
-		{
-			while(entidad.puntsig!=-1)
-			{
-				fscanf(arch,"%s%ld%ld%ld",entidad.nom,&entidad.pundata,&entidad.puntatri,&entidad.puntsig);
-				printf("Nombre: %s\n",nom);
-				if(entidad.pundata==-1)
-				{
-					printf("No tiene datos\n");
-				}
-				else
-				{
-					//Agrega datos
-				}
-				if(entidad.puntatri==-1)
-				{
-					printf("No tiene atributos\n");
-				}
-				else
-				{
-					//Agrega atributos
-				}
-				if(entidad.puntsig==-1)
-				{
-					printf("Termino la lista\n");
-					return;
-				}
-				else
-				{
-					fseek(arch, entidad.puntsig, SEEK_CUR);
-				}
-			}
-		}
+		printf("No hay nada en el diccionario\n");
+		return;
 	}
 	else
 	{
-		printf("Error al abrir el archivo\n");
+		fseek(arch,sizeof(long),SEEK_SET);
+		while(fread(&entidad,sizeof(Enti),1,arch)==1)
+		{
+			printf("La entidad: %s %ld %ld %ld\n",entidad.nom,entidad.pundata,entidad.puntatri,entidad.puntsig);
+			fseek(arch,0,entidad.puntsig);
+
+			//Agregar imprimir atributos y datos con while
+
+			if(entidad.puntsig==-1)
+			{
+				break;
+			}
+		}
 	}
 	fclose(arch);
 }
