@@ -268,54 +268,59 @@ void men_dat(FILE *arch)
 void agrega_enti(FILE *arch,char nom[])
 {
 	long puntf=-1,val,valant,pos;
-	Enti entidad;
+	Enti entidad,nueva;
+	strcpy(nueva.nom,nom);
+	nueva.pundata=-1;
+	nueva.puntatri=-1;
+	nueva.puntsig=-1;
 	fseek(arch, 0, SEEK_SET);
-	fread(&entidad.puntsig,sizeof(long),1,arch);
-	if(entidad.puntsig==-1)
+	fread(&val,sizeof(long),1,arch);
+	if(val==-1)
 	{
 		fseek(arch, 0, SEEK_END);
-		fwrite(nom,sizeof(entidad.nom),1,arch);
-		fwrite(&puntf,sizeof(long),1,arch);
-		fwrite(&puntf,sizeof(long),1,arch);
-		fwrite(&puntf,sizeof(long),1,arch);
-		val=ftell(arch);
-		fseek(arch, 0, SEEK_SET);
-		fwrite(&val,sizeof(long),1,arch);
 		pos=ftell(arch);
+		fwrite(&nueva,sizeof(Enti),1,arch);
+		fseek(arch, 0, SEEK_SET);
+		fwrite(&pos,sizeof(long),1,arch);
 		return;
 	}
 	else
 	{
-		fseek(arch, entidad.puntsig, SEEK_SET);
-		while(fread(&entidad,sizeof(Enti),1,arch)==1)
+		valant=-1;
+		while(val!=-1)
 		{	
+			fseek(arch, val, SEEK_SET);
+			fread(&entidad,sizeof(Enti),1,arch);
 			if(strcmp(nom,entidad.nom)<0)
-			{
+			{	
+				fseek(arch, 0, SEEK_END);
 				pos=ftell(arch);
-				valant = ftell(arch) - sizeof(Enti);
-                fseek(arch, 0, SEEK_END);
-                val = ftell(arch);
-
-                fwrite(nom, sizeof(entidad.nom), 1, arch);
-                fwrite(&puntf, sizeof(long), 1, arch);
-                fwrite(&puntf, sizeof(long), 1, arch);
-                fwrite(&entidad.puntsig, sizeof(long), 1, arch);
-				pos=ftell(arch);
-                fseek(arch, valant + offsetof(Enti, puntsig), SEEK_SET);
-				pos=ftell(arch);
-                fwrite(&val, sizeof(long), 1, arch);
+				nueva.puntsig=val;
+				fwrite(&nueva,sizeof(Enti),1,arch);
+                if(valant==-1)
+				{	
+					fseek(arch,0, SEEK_SET);
+					fwrite(&pos,sizeof(long),1,arch);
+				}
+				else
+				{
+					fseek(arch, valant + offsetof(Enti, puntsig), SEEK_SET);
+               		fwrite(&pos,sizeof(long),1,arch);
+				}
                 return;
 			}
+			valant=val;
+			val=entidad.puntsig;
 		}
 	}	
-	valant=ftell(arch);
 	fseek(arch,0,SEEK_END);	
-	fwrite(nom,sizeof(entidad.nom),1,arch);
-	fwrite(&puntf,sizeof(long),1,arch);
-	fwrite(&puntf,sizeof(long),1,arch);
-	fwrite(&puntf,sizeof(long),1,arch);
-	fseek(arch,valant-offsetof(Enti,puntsig),SEEK_SET);  		
-	fwrite(&val,sizeof(long),1,arch);
+	pos=ftell(arch);
+	fwrite(&nueva,sizeof(Enti),1,arch);
+	if(valant!=-1)
+	{
+	fseek(arch,valant+offsetof(Enti,puntsig),SEEK_SET);  		
+	fwrite(&pos,sizeof(long),1,arch);
+	}
 }
 //Elimina entidad
 void elimina_enti(FILE *arch,char nom[])
