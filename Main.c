@@ -268,7 +268,7 @@ void agrega_enti(FILE *arch,char nom[])
 		valant=-1;
 		while(val!=-1)
 		{	
-			fseek(arch, val, SEEK_SET);
+			fseek(arch, sizeof(long), SEEK_SET); 
 			fread(&entidad,sizeof(Enti),1,arch);
 			if(strcmp(nom,entidad.nom)<0)
 			{	
