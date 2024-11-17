@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
-//Estructuras 
+//Estructuras tiene un relleno de 6 bytes
+#pragma pack(push, 1)
 typedef struct
 {
 	char nom[50];
@@ -9,13 +10,14 @@ typedef struct
 	long puntatri;
 	long puntsig;
 }Enti;
+#pragma pack(pop) 
 //Funciones principales
 void agrega_nuevo();
 void imprimir();
 //Funciones de los menus
 void menu2();
 void men_ent(FILE *arch);
-void men_atri(FILE *arch);
+void men_atri(FILE *arch, char nom1[]);
 void men_dat(FILE *arch);
 //Funciones de entidades
 void agrega_enti(FILE *arch,char nom[]);
@@ -90,17 +92,23 @@ void imprimir()
 	printf("Dame el nombre del archivo que quieres abrir:");
 	scanf("%s",nom);
 	arch=fopen(nom,"r");
+	if(arch==NULL)
+	{
+		printf("No se pudo abrir el archivo\n");
+		return;
+	}
 	fseek(arch,0,SEEK_SET);
 	fread(&cab,sizeof(long),1,arch);
 	printf("%ld\n",cab);
 	if(cab==-1)
 	{
 		printf("No hay nada en el diccionario\n");
+		fclose(arch);
 		return;
 	}
 	else
 	{
-		fseek(arch,sizeof(long),SEEK_SET);
+		fseek(arch,cab,SEEK_SET);
 		while(fread(&entidad,sizeof(Enti),1,arch)==1)
 		{
 			printf("La entidad: %s %ld %ld %ld\n",entidad.nom,entidad.pundata,entidad.puntatri,entidad.puntsig);
@@ -111,6 +119,10 @@ void imprimir()
 			if(entidad.puntsig==-1)
 			{
 				break;
+			}
+			else
+			{
+				fseek(arch,entidad.puntsig,SEEK_SET);
 			}
 		}
 	}
@@ -132,12 +144,11 @@ void menu2()
         return;
     }
 	int op=0;
-	while(op!=4)
+	while(op!=3)
 	{
 		printf("1. Menu de entidades\n");
-		printf("2. Menu de atributos\n");
-		printf("3. Menu de datos\n");
-		printf("4. volver al menu\n");
+		printf("2. Menu de datos\n");
+		printf("3. volver al menu\n");
 		printf("Dame que opcion quieres:");
 		scanf("%d",&op);
 	
@@ -147,12 +158,9 @@ void menu2()
 				men_ent(arch);
 				break;
 			case 2:
-				men_atri(arch);
-				break;
-			case 3:
 				men_dat(arch);
 				break;
-			case 4:
+			case 3:
 				break;
 		}
 	}
@@ -188,7 +196,7 @@ void men_ent(FILE *arch)
 			imprimir_enti(arch,nom);
 			break;
 		case 4:
-			modifica_enti(arch,nom);
+			men_atri(arch,nom);
 			break;
 		case 5:
 			break;
@@ -197,7 +205,7 @@ void men_ent(FILE *arch)
 }
 
 //Menu de atributos
-void men_atri(FILE *arch)
+void men_atri(FILE *arch, char nom1[])
 {
 	char nom[50];
 	printf("Dame el nombre el atributo a usar:");
@@ -261,6 +269,7 @@ void agrega_enti(FILE *arch,char nom[])
 		fwrite(&nueva,sizeof(Enti),1,arch);
 		fseek(arch, 0, SEEK_SET);
 		fwrite(&pos,sizeof(long),1,arch);
+		fflush(arch);
 		return;
 	}
 	else
@@ -268,7 +277,7 @@ void agrega_enti(FILE *arch,char nom[])
 		valant=-1;
 		while(val!=-1)
 		{	
-			fseek(arch, sizeof(long), SEEK_SET); 
+			fseek(arch, val, SEEK_SET); 
 			fread(&entidad,sizeof(Enti),1,arch);
 			if(strcmp(nom,entidad.nom)<0)
 			{	
@@ -286,6 +295,7 @@ void agrega_enti(FILE *arch,char nom[])
 					fseek(arch, valant + offsetof(Enti, puntsig), SEEK_SET);
                		fwrite(&pos,sizeof(long),1,arch);
 				}
+				fflush(arch);
                 return;
 			}
 			valant=val;
@@ -299,6 +309,7 @@ void agrega_enti(FILE *arch,char nom[])
 	{
 	fseek(arch,valant+offsetof(Enti,puntsig),SEEK_SET);  		
 	fwrite(&pos,sizeof(long),1,arch);
+	fflush(arch);
 	}
 }
 //Elimina entidad
@@ -330,11 +341,7 @@ void imprimir_enti(FILE *arch,char nom[])
 	
 }
 
-//modifica entidad
-void modifica_enti(FILE *arch,char nom[])
-{
-	
-}
+
 
 
 //Funciones de atributos
