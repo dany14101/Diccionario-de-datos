@@ -317,17 +317,38 @@ void elimina_enti(FILE *arch,char nom[])
 {
 	int op=0;
 	Enti entidad,act;
-	long puntf=-1,val,valant,pos;
-	fseek(arch, sizeof(long), SEEK_SET);
-	while(fread(&entidad,sizeof(Enti),1,arch)==1&&strcmp(entidad.nom,nom)!=0)
+	long val,valant=-1,pos,sig,cab;
+	fseek(arch,0,SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	if(cab==-1)
+	{
+		printf("El diccionario esta vacio\n");
+	}
+	fseek(arch,cab,SEEK_SET);
+	while(fread(&entidad,sizeof(Enti),1,arch)==1)
 	{
 		if(strcmp(entidad.nom,nom)==0)
 		{
-			val = ftell(arch-sizeof(Enti)-sizeof(Enti));
 			op=1;
-			fscanf(arch,"%50s%ld%ld",act.nom,&act.pundata,&act.puntatri);
-			fwrite(&entidad.puntsig,sizeof(long),1,arch);
+			sig=entidad.puntsig;
+			if(valant==-1)
+			{
+				fseek(arch,0, SEEK_SET);
+				fwrite(&sig,sizeof(long),1,arch);
+			}
+			else
+			{
+			fseek(arch,valant+offsetof(Enti,puntsig),SEEK_SET);
+			fwrite(&sig,sizeof(long),1,arch);
+			}
+			break;
 		}
+		if(entidad.puntsig==-1)
+		{
+			break;
+		}
+		valant=ftell(arch);
+		fseek(arch,entidad.puntsig,SEEK_SET);
 	}
 	if(op==0)
 	{
