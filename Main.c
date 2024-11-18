@@ -514,7 +514,66 @@ void agrega_atri(FILE *arch,char atri[],char enti[])
 //Elimina atributo
 void elimina_atri(FILE *arch,char atri[],char enti[])
 {
-	
+	int op=0;
+	long cab,valant=-1,pos,ini,aux,sig;
+	Atri act;
+	Enti entidad;
+	fseek(arch, 0, SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	if(cab==-1)
+	{
+		printf("No hay entidades a la cual eliminar atributos\n");
+		return;
+	}
+		while(cab!=-1)
+		{	
+			fseek(arch, cab, SEEK_SET);
+			fread(&entidad,sizeof(Enti),1,arch);
+			if(strcmp(enti,entidad.nom)==0)
+			{	
+				if(entidad.puntatri==-1)
+				{
+					printf("No hay atributo para eliminar\n");
+               		return;
+				}
+				else
+				{
+					valant=-1;
+					aux=entidad.puntatri;
+					while(aux!=-1)
+					{
+						fseek(arch,aux,SEEK_SET);
+						fread(&act,sizeof(Atri),1,arch);
+						if(strcmp(act.nom,atri)==0)
+						{
+							op=1;
+							sig=act.puntsig;
+							if(valant==-1)
+							{
+								fseek(arch,cab+offsetof(Enti,puntatri),SEEK_SET);
+								fwrite(&sig,sizeof(long),1,arch);
+							}
+							else
+							{
+								fseek(arch,valant+offsetof(Atri,puntsig),SEEK_SET);
+								fwrite(&sig,sizeof(long),1,arch);
+							}
+							printf("Se logro eliminar el atributo\n");
+							return;
+						}
+						valant=aux;
+						aux=act.puntsig;
+					}
+					printf("No existe el atributo\n");
+					return;
+				}
+			}
+			cab=entidad.puntsig;
+		}
+	if(op==0)
+	{
+		printf("No esta el atributo que quieres eliminar\n");
+	}
 }
 
 //Imprime atributo
