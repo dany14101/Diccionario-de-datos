@@ -360,7 +360,35 @@ void elimina_enti(FILE *arch,char nom[])
 //Imprime Enti
 void imprimir_enti(FILE *arch,char nom[])
 {
-	
+	int op=0;
+	Enti entidad,act;
+	long val,valant=-1,pos,sig,cab;
+	fseek(arch,0,SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	if(cab==-1)
+	{
+		printf("El diccionario esta vacio\n");
+	}
+	fseek(arch,cab,SEEK_SET);
+	while(fread(&entidad,sizeof(Enti),1,arch)==1)
+	{
+		if(strcmp(entidad.nom,nom)==0)
+		{
+			op=1;
+			printf("La entidad tiene: %s %ld %ld %ld\n",entidad.nom,entidad.pundata,entidad.puntatri,entidad.puntsig);
+			return;
+		}
+		if(entidad.puntsig==-1)
+		{
+			break;
+		}
+		valant=ftell(arch)-sizeof(Enti);
+		fseek(arch,entidad.puntsig,SEEK_SET);
+	}
+	if(op==0)
+	{
+		printf("No esta la entidad que quieres imprimir\n\n");
+	}
 }
 
 
