@@ -341,13 +341,14 @@ void elimina_enti(FILE *arch,char nom[])
 			fseek(arch,valant+offsetof(Enti,puntsig),SEEK_SET);
 			fwrite(&sig,sizeof(long),1,arch);
 			}
-			break;
+			printf("Entidad eliminada\n");
+			return;
 		}
 		if(entidad.puntsig==-1)
 		{
 			break;
 		}
-		valant=ftell(arch);
+		valant=ftell(arch)-sizeof(Enti);
 		fseek(arch,entidad.puntsig,SEEK_SET);
 	}
 	if(op==0)
