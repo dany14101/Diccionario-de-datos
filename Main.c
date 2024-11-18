@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
+#include <stdbool.h>
 //Estructuras tiene un relleno de 6 bytes
 #pragma pack(push, 1)
 typedef struct
@@ -10,6 +11,17 @@ typedef struct
 	long puntatri;
 	long puntsig;
 }Enti;
+#pragma pack(pop) 
+
+#pragma pack(push, 1)
+typedef struct
+{
+	char nom[50];
+	bool prymary;
+	char tipo;
+	int tam;
+	long puntsig;
+}Atri;
 #pragma pack(pop) 
 //Funciones principales
 void agrega_nuevo();
@@ -25,10 +37,10 @@ void elimina_enti(FILE *arch,char nom[]);
 void imprimir_enti(FILE *arch,char nom[]);
 void modifica_enti(FILE *arch,char nom[]);
 //Funciones de atributos
-void agrega_atri(FILE *arch,char nom[]);
-void elimina_atri(FILE *arch,char nom[]);
-void imprimir_atri(FILE *arch,char nom[]);
-void modifica_atri(FILE *arch,char nom[]);
+void agrega_atri(FILE *arch,char atri[],char enti[]);
+void elimina_atri(FILE *arch,char atri[],char enti[]);
+void imprimir_atri(FILE *arch,char atri[],char enti[]);
+void modifica_atri(FILE *arch,char atri[],char enti[]);
 //Funciones de datos
 int main() 
 {
@@ -207,7 +219,8 @@ void men_ent(FILE *arch)
 //Menu de atributos
 void men_atri(FILE *arch, char nom1[])
 {
-	char nom[50];
+	char nom[50],atri[50];
+	strcat(atri,nom1);
 	printf("Dame el nombre el atributo a usar:");
 	scanf("%s",nom);
 	int op=0;
@@ -224,16 +237,16 @@ void men_atri(FILE *arch, char nom1[])
 		switch(op)
 		{
 		case 1:
-			agrega_atri(arch,nom);
+			agrega_atri(arch,nom,atri);
 			break;
 		case 2:
-			elimina_atri(arch,nom);
+			elimina_atri(arch,nom,atri);
 			break;
 		case 3:
-			imprimir_atri(arch,nom);
+			imprimir_atri(arch,nom,atri);
 			break;
 		case 4:
-			modifica_atri(arch,nom);
+			modifica_atri(arch,nom,atri);
 			break;
 		case 5:
 			break;
@@ -397,24 +410,104 @@ void imprimir_enti(FILE *arch,char nom[])
 //Funciones de atributos
 
 //Agrega atributo
-void agrega_atri(FILE *arch,char nom[])
+void agrega_atri(FILE *arch,char atri[],char enti[])
 {
-	
+	long cab,valant=-1,pos,ini,aux;
+	char en[50];
+	Atri nueva,act;
+	Enti entidad;
+	en[0]='\0';
+	strcpy(en,enti);
+	strcpy(nueva.nom,atri);
+	nueva.prymary=false;
+	nueva.tam=0;
+	nueva.tipo='c';
+	nueva.puntsig=-1;
+	fseek(arch, 0, SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	if(cab==-1)
+	{
+		printf("No hay entidades a la cual agregar atributos\n");
+		return;
+	}
+		while(cab!=-1)
+		{	
+			fseek(arch, cab, SEEK_SET);
+			memset(entidad.nom,'\0',sizeof(entidad.nom));
+			fread(&entidad,sizeof(Enti),1,arch);
+			if(strcmp(en,entidad.nom)==0)
+			{	
+				if(entidad.puntatri==-1)
+				{
+					fseek(arch,0,SEEK_END);
+					ini=ftell(arch);
+					fwrite(&nueva,sizeof(Atri),1,arch);
+					fseek(arch,cab+offsetof(Enti,puntatri),SEEK_SET);
+					fwrite(&ini,sizeof(long),1,arch);
+					fflush(arch);
+               		return;
+				}
+				else
+				{
+					valant=-1;
+					aux=entidad.puntatri;
+					while(aux!=-1)
+					{
+						fseek(arch,aux,SEEK_SET);
+						fread(&act,sizeof(Atri),1,arch);
+						if(strcmp(act.nom,atri)==0)
+						{
+							printf("Ya existe este atributo\n");
+							return;
+						}
+						if(strcmp(act.nom,atri)>0)
+						{
+							fseek(arch, 0, SEEK_END);
+							pos=ftell(arch);
+							nueva.puntsig=aux;
+							fwrite(&nueva,sizeof(Atri),1,arch);
+                			if(valant==-1)
+							{	
+								fseek(arch, cab + offsetof(Enti, puntatri), SEEK_SET);
+               					fwrite(&pos,sizeof(long),1,arch);
+							}
+							else
+							{
+								fseek(arch, valant + offsetof(Atri, puntsig), SEEK_SET);
+								fwrite(&pos,sizeof(long),1,arch);
+							}
+							fflush(arch);
+               				return;
+						}
+						valant=aux;
+						aux=act.puntsig;
+					}
+					fseek(arch,0,SEEK_END);
+					pos=ftell(arch);
+					fwrite(&nueva,sizeof(Atri),1,arch);
+					fseek(arch, valant + offsetof(Atri, puntsig), SEEK_SET);
+					fwrite(&pos,sizeof(long),1,arch);
+					fflush(arch);
+					return;
+				}
+			}
+			cab=entidad.puntsig;
+		}
 }
 //Elimina atributo
-void elimina_atri(FILE *arch,char nom[])
+void elimina_atri(FILE *arch,char atri[],char enti[])
 {
 	
 }
 
 //Imprime atributo
-void imprimir_atri(FILE *arch,char nom[])
+void imprimir_atri(FILE *arch,char atri[],char enti[])
 {
 	
 }
 
 //modifica atributo
-void modifica_atri(FILE *arch,char nom[])
+void modifica_atri(FILE *arch,char atri[],char enti[])
 {
 	
 }
