@@ -97,9 +97,10 @@ void agrega_nuevo()
 //Imprime un diccionario
 void imprimir()
 {
-	long punt,cab;
+	long punt,cab,caba,punta;
 	FILE *arch;
 	Enti entidad;
+	Atri atrib;
 	char nom[50];
 	printf("Dame el nombre del archivo que quieres abrir:");
 	scanf("%s",nom);
@@ -123,10 +124,28 @@ void imprimir()
 		fseek(arch,cab,SEEK_SET);
 		while(fread(&entidad,sizeof(Enti),1,arch)==1)
 		{
+			//Se encarga de atributos
 			printf("La entidad: %s %ld %ld %ld\n",entidad.nom,entidad.pundata,entidad.puntatri,entidad.puntsig);
 			fseek(arch,0,entidad.puntsig);
-
-			//Agregar imprimir atributos y datos con while
+			if(entidad.puntatri!=-1)
+			{
+				printf("Lista de atributos:\n");
+				fseek(arch,entidad.puntatri,SEEK_SET);
+				while(fread(&atrib,sizeof(Atri),1,arch)==1)
+				{
+					printf("Atributo: %s %d %d  %c %ld\n",atrib.nom,atrib.prymary,atrib.tam,atrib.tipo,atrib.puntsig);
+					fseek(arch,atrib.puntsig,SEEK_SET);
+					if(atrib.puntsig==-1)
+					{
+						break;
+					}
+				}
+			}
+			else
+			{
+				printf("No tiene atributos\n");
+			}
+			//Agregar datos con while
 
 			if(entidad.puntsig==-1)
 			{
@@ -134,6 +153,7 @@ void imprimir()
 			}
 			else
 			{
+				printf("\n");
 				fseek(arch,entidad.puntsig,SEEK_SET);
 			}
 		}
@@ -219,7 +239,7 @@ void men_ent(FILE *arch)
 //Menu de atributos
 void men_atri(FILE *arch, char nom1[])
 {
-	char nom[50],atri[50];
+	char nom[50],atri[50]="";
 	strcat(atri,nom1);
 	printf("Dame el nombre el atributo a usar:");
 	scanf("%s",nom);
@@ -413,11 +433,8 @@ void imprimir_enti(FILE *arch,char nom[])
 void agrega_atri(FILE *arch,char atri[],char enti[])
 {
 	long cab,valant=-1,pos,ini,aux;
-	char en[50];
 	Atri nueva,act;
 	Enti entidad;
-	en[0]='\0';
-	strcpy(en,enti);
 	strcpy(nueva.nom,atri);
 	nueva.prymary=false;
 	nueva.tam=0;
@@ -435,7 +452,7 @@ void agrega_atri(FILE *arch,char atri[],char enti[])
 			fseek(arch, cab, SEEK_SET);
 			memset(entidad.nom,'\0',sizeof(entidad.nom));
 			fread(&entidad,sizeof(Enti),1,arch);
-			if(strcmp(en,entidad.nom)==0)
+			if(strcmp(enti,entidad.nom)==0)
 			{	
 				if(entidad.puntatri==-1)
 				{
