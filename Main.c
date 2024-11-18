@@ -520,7 +520,55 @@ void elimina_atri(FILE *arch,char atri[],char enti[])
 //Imprime atributo
 void imprimir_atri(FILE *arch,char atri[],char enti[])
 {
-	
+	long cab,valant=-1,pos,ini,aux;
+	Atri nueva,act;
+	Enti entidad;
+	strcpy(nueva.nom,atri);
+	nueva.prymary=false;
+	nueva.tam=0;
+	nueva.tipo='c';
+	nueva.puntsig=-1;
+	fseek(arch, 0, SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	if(cab==-1)
+	{
+		printf("No hay entidades a la cual agregar atributos\n");
+		return;
+	}
+		while(cab!=-1)
+		{	
+			fseek(arch, cab, SEEK_SET);
+			memset(entidad.nom,'\0',sizeof(entidad.nom));
+			fread(&entidad,sizeof(Enti),1,arch);
+			if(strcmp(enti,entidad.nom)==0)
+			{	
+				if(entidad.puntatri==-1)
+				{
+					printf("No existe el atributo\n");
+               		return;
+				}
+				else
+				{
+					valant=-1;
+					aux=entidad.puntatri;
+					while(aux!=-1)
+					{
+						fseek(arch,aux,SEEK_SET);
+						fread(&act,sizeof(Atri),1,arch);
+						if(strcmp(act.nom,atri)==0)
+						{
+							printf("Atributo: %s %d %d  %c %ld\n",act.nom,act.prymary,act.tam,act.tipo,act.puntsig);
+							return;
+						}
+						valant=aux;
+						aux=act.puntsig;
+					}
+					printf("No existe el atributo\n");
+					return;
+				}
+			}
+			cab=entidad.puntsig;
+		}
 }
 
 //modifica atributo
