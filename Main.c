@@ -133,7 +133,7 @@ void imprimir()
 				fseek(arch,entidad.puntatri,SEEK_SET);
 				while(fread(&atrib,sizeof(Atri),1,arch)==1)
 				{
-					printf("Atributo: %s %b %d  %c %ld\n",atrib.nom,atrib.prymary,atrib.tam,atrib.tipo,atrib.puntsig);
+					printf("Atributo: %s %d %d  %c %ld\n",atrib.nom,atrib.prymary,atrib.tam,atrib.tipo,atrib.puntsig);
 					fseek(arch,atrib.puntsig,SEEK_SET);
 					if(atrib.puntsig==-1)
 					{
@@ -616,7 +616,7 @@ void imprimir_atri(FILE *arch,char atri[],char enti[])
 						fread(&act,sizeof(Atri),1,arch);
 						if(strcmp(act.nom,atri)==0)
 						{
-							printf("Atributo: %s %b %d  %c %ld\n",act.nom,act.prymary,act.tam,act.tipo,act.puntsig);
+							printf("Atributo: %s %d %d  %c %ld\n",act.nom,act.prymary,act.tam,act.tipo,act.puntsig);
 							return;
 						}
 						valant=aux;
@@ -633,6 +633,7 @@ void imprimir_atri(FILE *arch,char atri[],char enti[])
 //modifica atributo
 void modifica_atri(FILE *arch,char atri[],char enti[])
 {
+	int val;
 	long cab,valant=-1,pos,ini,aux,dire;
 	Atri nueva,act,nuevoatri;
 	Enti entidad;
@@ -641,12 +642,21 @@ void modifica_atri(FILE *arch,char atri[],char enti[])
 	//Pido datos del nuevo atributo
 	printf("Dame el nombre:");
 	scanf("%s",nuevoatri.nom);
-	printf("Dame el valor boleano:");
-	scanf("%b",nuevoatri.prymary);
-	printf("Dame el tamaño:");
-	scanf("%d",nuevoatri.tam);
+	fflush(stdin);
+	printf("Dame el valor boleano 1 o 0:");
+	scanf("%d",&val);
+	if(val==1)
+	{
+		nuevoatri.prymary=true;
+	}
+	else
+	{
+		nuevoatri.prymary=false;
+	}
 	printf("Dame el tipo:");
-	scanf("%c",nuevoatri.tipo);
+	scanf("%s",&nuevoatri.tipo);
+	printf("Dame el tamaño:");
+	scanf("%d",&nuevoatri.tam);
 	nuevoatri.puntsig=-1;
 	nueva.prymary=false;
 	nueva.tam=0;
