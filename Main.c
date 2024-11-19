@@ -34,7 +34,7 @@ void men_dat(FILE *arch);
 //Funciones de entidades
 void agrega_enti(FILE *arch,char nom[]);
 void elimina_enti(FILE *arch,char nom[]);
-void imprimir_enti(FILE *arch,char nom[]);
+void cambnom_enti(FILE *arch,char nom[]);
 void modifica_enti(FILE *arch,char nom[]);
 //Funciones de atributos
 void agrega_atri(FILE *arch,char atri[],char enti[]);
@@ -210,7 +210,7 @@ void men_ent(FILE *arch)
 	{
 		printf("1. Agregar entidad\n");
 		printf("2. Eliminar entidad\n");
-		printf("3. Imprimir entidad\n");
+		printf("3. Cambiar nombre entidad\n");
 		printf("4. Modificar entidad\n");
 		printf("5. volver al menu\n");
 		printf("Dame que opcion quieres:");
@@ -225,7 +225,7 @@ void men_ent(FILE *arch)
 			elimina_enti(arch,nom);
 			break;
 		case 3:
-			imprimir_enti(arch,nom);
+			cambnom_enti(arch,nom);
 			break;
 		case 4:
 			men_atri(arch,nom);
@@ -391,11 +391,14 @@ void elimina_enti(FILE *arch,char nom[])
 }
 
 //Imprime Enti
-void imprimir_enti(FILE *arch,char nom[])
+void cambnom_enti(FILE *arch,char nom[])
 {
 	int op=0;
+	char vacio[50]="",nuev[50];
 	Enti entidad,act;
 	long val,valant=-1,pos,sig,cab;
+	printf("Dame el nombre que le quieres cambiar a la entidad:");
+	scanf("%s",nuev);
 	fseek(arch,0,SEEK_SET);
 	fread(&cab,sizeof(long),1,arch);
 	if(cab==-1)
@@ -408,7 +411,10 @@ void imprimir_enti(FILE *arch,char nom[])
 		if(strcmp(entidad.nom,nom)==0)
 		{
 			op=1;
-			printf("La entidad tiene: %s %ld %ld %ld\n",entidad.nom,entidad.pundata,entidad.puntatri,entidad.puntsig);
+			fseek(arch,cab,SEEK_SET);
+			fwrite(vacio,sizeof(vacio),1,arch);
+			fseek(arch,cab,SEEK_SET);
+			fwrite(nuev,sizeof(nuev),1,arch);
 			return;
 		}
 		if(entidad.puntsig==-1)
@@ -420,7 +426,7 @@ void imprimir_enti(FILE *arch,char nom[])
 	}
 	if(op==0)
 	{
-		printf("No esta la entidad que quieres imprimir\n\n");
+		printf("No esta la entidad que quieres modificar\n\n");
 	}
 }
 
@@ -432,13 +438,26 @@ void imprimir_enti(FILE *arch,char nom[])
 //Agrega atributo
 void agrega_atri(FILE *arch,char atri[],char enti[])
 {
+	int val;
 	long cab,valant=-1,pos,ini,aux;
 	Atri nueva,act;
 	Enti entidad;
-	strcpy(nueva.nom,atri);
-	nueva.prymary=false;
-	nueva.tam=0;
-	nueva.tipo='c';
+	memset(nueva.nom,'\0',sizeof(nueva.nom));
+	strcat(nueva.nom,atri);
+	printf("Dame el valor boleano 1 o 0:");
+	scanf("%d",&val);
+	if(val==1)
+	{
+		nueva.prymary=true;
+	}
+	else
+	{
+		nueva.prymary=false;
+	}
+	printf("Dame el tipo:");
+	scanf("%s",&nueva.tipo);
+	printf("Dame el tamaño:");
+	scanf("%d",&nueva.tam);
 	nueva.puntsig=-1;
 	fseek(arch, 0, SEEK_SET);
 	fread(&cab,sizeof(long),1,arch);
