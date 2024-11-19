@@ -133,7 +133,7 @@ void imprimir()
 				fseek(arch,entidad.puntatri,SEEK_SET);
 				while(fread(&atrib,sizeof(Atri),1,arch)==1)
 				{
-					printf("Atributo: %s %d %d  %c %ld\n",atrib.nom,atrib.prymary,atrib.tam,atrib.tipo,atrib.puntsig);
+					printf("Atributo: %s %b %d  %c %ld\n",atrib.nom,atrib.prymary,atrib.tam,atrib.tipo,atrib.puntsig);
 					fseek(arch,atrib.puntsig,SEEK_SET);
 					if(atrib.puntsig==-1)
 					{
@@ -616,7 +616,7 @@ void imprimir_atri(FILE *arch,char atri[],char enti[])
 						fread(&act,sizeof(Atri),1,arch);
 						if(strcmp(act.nom,atri)==0)
 						{
-							printf("Atributo: %s %d %d  %c %ld\n",act.nom,act.prymary,act.tam,act.tipo,act.puntsig);
+							printf("Atributo: %s %b %d  %c %ld\n",act.nom,act.prymary,act.tam,act.tipo,act.puntsig);
 							return;
 						}
 						valant=aux;
@@ -633,5 +633,72 @@ void imprimir_atri(FILE *arch,char atri[],char enti[])
 //modifica atributo
 void modifica_atri(FILE *arch,char atri[],char enti[])
 {
-	
+	long cab,valant=-1,pos,ini,aux,dire;
+	Atri nueva,act,nuevoatri;
+	Enti entidad;
+	char vacio[50]="";
+	strcpy(nueva.nom,atri);
+	//Pido datos del nuevo atributo
+	printf("Dame el nombre:");
+	scanf("%s",nuevoatri.nom);
+	printf("Dame el valor boleano:");
+	scanf("%b",nuevoatri.prymary);
+	printf("Dame el tamaño:");
+	scanf("%d",nuevoatri.tam);
+	printf("Dame el tipo:");
+	scanf("%c",nuevoatri.tipo);
+	nuevoatri.puntsig=-1;
+	nueva.prymary=false;
+	nueva.tam=0;
+	nueva.tipo='c';
+	nueva.puntsig=-1;
+	fseek(arch, 0, SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	if(cab==-1)
+	{
+		printf("No hay entidades a la cual agregar atributos\n");
+		return;
+	}
+		while(cab!=-1)
+		{	
+			fseek(arch, cab, SEEK_SET);
+			memset(entidad.nom,'\0',sizeof(entidad.nom));
+			fread(&entidad,sizeof(Enti),1,arch);
+			if(strcmp(enti,entidad.nom)==0)
+			{	
+				if(entidad.puntatri==-1)
+				{
+					fseek(arch,0,SEEK_END);
+					ini=ftell(arch);
+					fwrite(&nuevoatri,sizeof(Atri),1,arch);
+					fseek(arch,cab+offsetof(Enti,puntatri),SEEK_SET);
+					fwrite(&ini,sizeof(long),1,arch);
+					fflush(arch);
+               		return;
+				}
+				else
+				{
+					valant=-1;
+					aux=entidad.puntatri;
+					while(aux!=-1)
+					{
+						fseek(arch,aux,SEEK_SET);
+						fread(&act,sizeof(Atri),1,arch);
+						if(strcmp(act.nom,atri)==0)
+						{
+							nuevoatri.puntsig=act.puntsig;
+							fseek(arch,aux,SEEK_SET);
+							fwrite(vacio,sizeof(vacio),1,arch);
+							fseek(arch,aux,SEEK_SET);
+							fwrite(&nuevoatri,sizeof(Atri),1,arch);
+							return;
+						}
+						valant=aux;
+						aux=act.puntsig;
+					}
+					return;
+				}
+			}
+			cab=entidad.puntsig;
+		}
 }
