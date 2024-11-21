@@ -106,6 +106,10 @@ void imprimir()
 	Enti entidad;
 	Atri atrib;
 	char nom[50];
+	int val;
+	float val1;
+	char val2[120];
+	long val3;
 	printf("Dame el nombre del archivo que quieres abrir:");
 	scanf("%s",nom);
 	arch=fopen(nom,"r");
@@ -152,23 +156,46 @@ void imprimir()
 			if(entidad.pundata!=-1)
 			{
 				printf("Lista de datos:\n");
-				fseek(arch,entidad.puntatri,SEEK_SET);
-				pos=ftell(arch);
+				fseek(arch,entidad.pundata,SEEK_SET);
+				fin=entidad.pundata;
 				while(fin!=-1)
 				{
 					while(fread(&atrib,sizeof(Atri),1,arch)==1)
 					{
-					
-						fseek(arch,atrib.puntsig,SEEK_SET);
+						if(atrib.tipo=='i')
+						{
+							fread(&val,sizeof(int),1,arch);
+							printf("%d-",val);
+						}
+						if(atrib.tipo=='f')
+						{
+							fread(&val1,sizeof(float),1,arch);
+							printf("%.2f-",val1);
+						}
+						if(atrib.tipo=='c')
+						{
+							fread(&val2,sizeof(val2),1,arch);
+							printf("%s-",val2);
+						}
+						if(atrib.tipo=='l')
+						{
+							fread(&val3,sizeof(long),1,arch);
+							printf("%ld-",val3);
+						}
 						if(atrib.puntsig==-1)
 						{
 							break;
 						}
+						fseek(arch,atrib.puntsig,SEEK_SET);
 					}
+					printf("\n");
+					fin=-1;
 				}
 			}
-			//Agregar datos con while
-
+			else
+			{
+				printf("No tiene datos\n");
+			}
 			if(entidad.puntsig==-1)
 			{
 				break;
@@ -800,8 +827,7 @@ void agrega_dato(FILE *arch,char enti[])
 	long val3;
 //
 	long cab,valant=-1,pos,ini,aux;
-	
-	Atri ant,act;
+	Atri atrib;
 	Enti entidad;
 	fseek(arch, 0, SEEK_SET);
 	fread(&cab,sizeof(long),1,arch);
@@ -820,43 +846,44 @@ void agrega_dato(FILE *arch,char enti[])
 				{
 					fseek(arch,0,SEEK_END);
 					ini=ftell(arch);
-					fseek(arch,entidad.puntatri,SEEK_SET);
-					while(aux3.puntsig)
+					fseek(arch,cab+offsetof(Enti,pundata),SEEK_SET);
+					fwrite(&ini,sizeof(long),1,arch);
+					while(atrib.puntsig!=-1)
 					{
-						fread(&act,sizeof(Atri),1,arch);
-						if(act.tipo=='i')
+						fread(&atrib,sizeof(Atri),1,arch)
+						if(atrib.tipo=='i'&&atrib.prymari==true)
 						{
-							printf("Dame el %s que deseas ingresar:",aux3.nom);
+							printf("Dame el %s que deseas ingresar:",atrib.nom);
 							scanf("%d",&val);
 							fseek(arch,0,SEEK_END);
 							fwrite(&val,sizeof(int),1,arch);
 						}
-						if(act.tipo=='f')
+						if(atrib.tipo=='f'&&atrib.prymari==true)
 						{
 							printf("Dame el %s numero flotante que deseas ingresar:",aux3.nom);
 							scanf("%f",&val1);
 							fseek(arch,0,SEEK_END);
 							fwrite(&val1,sizeof(float),1,arch);
 						}
-						if(act.tipo=='c')
+						if(atrib.tipo=='c'&&atrib.prymari==true)
 						{
 							printf("Dame el %s cadena que deseas ingresar:",aux3.nom);
 							scanf("%s",val2);
 							fseek(arch,0,SEEK_END);
 							fwrite(val2,sizeof(val2),1,arch);
 						}
-						if(act.tipo=='l')
+						if(atrib.tipo=='l')
 						{
 							printf("Dame el %s numero long que deseas ingresar:",aux3.nom);
 							scanf("%ld",&val3);
 							fseek(arch,0,SEEK_END);
 							fwrite(&val3,sizeof(long),1,arch);
 						}
-						if(act.puntsig==-1)
+						if(atrib.puntsig==-1)
 						{
 							break;
 						}
-						fseek(arch,act.puntsig,SEEK_SET);
+						fseek(arch,atrib.puntsig,SEEK_SET);
 					}
 					fseek(arch,cab+offsetof(Enti,pundata),SEEK_SET);
 					fwrite(&ini,sizeof(long),1,arch);
@@ -870,32 +897,32 @@ void agrega_dato(FILE *arch,char enti[])
 					while(aux!=-1)
 					{
 						fseek(arch,aux,SEEK_SET);
-						fread(&act,sizeof(Atri),1,arch);
+						fread(&atrib,sizeof(Atri),1,arch);
 						fseek(arch, 0, SEEK_END);
 						pos=ftell(arch);
-						act.puntsig=aux;
-							if(act.tipo=='i')
+						atrib.puntsig=aux;
+							if(atrib.tipo=='i')
 							{
 								printf("Dame el %s que deseas ingresar:",aux3.nom);
 								scanf("%d",&val);
 								fseek(arch,0,SEEK_END);
 								fwrite(&val,sizeof(int),1,arch);
 							}
-							if(act.tipo=='f')
+							if(atrib.tipo=='f')
 							{
 								printf("Dame el %s numero flotante que deseas ingresar:",aux3.nom);
 								scanf("%f",&val1);
 								fseek(arch,0,SEEK_END);
 								fwrite(&val1,sizeof(float),1,arch);
 							}
-							if(act.tipo=='c')
+							if(atrib.tipo=='c')
 							{
 								printf("Dame el %s cadena que deseas ingresar:",aux3.nom);
 								scanf("%s",val2);
 								fseek(arch,0,SEEK_END);
 								fwrite(val2,sizeof(val2),1,arch);
 							}
-							if(act.tipo=='l')
+							if(atrib.tipo=='l')
 							{
 								printf("Dame el %s numero long que deseas ingresar:",aux3.nom);
 								scanf("%ld",&val3);
@@ -915,11 +942,11 @@ void agrega_dato(FILE *arch,char enti[])
 							fflush(arch);
                				return;
 						valant=aux;
-						aux=act.puntsig;
+						aux=atrib.puntsig;
 					}
 					fseek(arch,0,SEEK_END);
 					pos=ftell(arch);
-					fwrite(&aux,sizeof(Atri),1,arch);
+					fwrite(&atrib,sizeof(Atri),1,arch);
 					fseek(arch, valant + offsetof(Atri, puntsig), SEEK_SET);
 					fwrite(&pos,sizeof(long),1,arch);
 					fflush(arch);
