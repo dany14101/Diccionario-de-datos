@@ -42,6 +42,10 @@ void elimina_atri(FILE *arch,char atri[],char enti[]);
 void imprimir_atri(FILE *arch,char atri[],char enti[]);
 void modifica_atri(FILE *arch,char atri[],char enti[]);
 //Funciones de datos
+void agrega_dato(FILE *arch,char nom[]);
+void elimina_datos(FILE *arch,char nom[]);
+void modifica_datos(FILE *arch,char nom[]);
+
 int main() 
 {
 	int op=0;
@@ -277,7 +281,34 @@ void men_atri(FILE *arch, char nom1[])
 //Menu de datos
 void men_dat(FILE *arch)
 {
-	
+	char nom[50];
+	printf("Dame el nombre la entidad a usar:");
+	scanf("%s",nom);
+	int op=0;
+	while(op!=5)
+	{
+		printf("1. Agregar dato\n");
+		printf("2. Eliminar dato\n");
+		printf("3. Modificar entidad\n");
+		printf("4. volver al menu\n");
+		printf("Dame que opcion quieres:");
+		scanf("%d",&op);
+		
+		switch(op)
+		{
+		case 1:
+			agrega_dato(arch,nom);
+			break;
+		case 2:
+			elimina_dato(arch,nom);
+			break;
+		case 3:
+			modifica_dato(arch,nom);
+			break;
+		case 4:
+			break;
+		}
+	}
 }
 
 
@@ -730,4 +761,21 @@ void modifica_atri(FILE *arch,char atri[],char enti[])
 			}
 			cab=entidad.puntsig;
 		}
+}
+
+
+//Funciones de datos
+void agrega_dato(FILE *arch,char nom[])
+{
+
+}
+
+void elimina_datos(FILE *arch,char nom[])
+{
+
+}
+
+void modifica_datos(FILE *arch,char nom[])
+{
+	
 }
