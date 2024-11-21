@@ -101,7 +101,7 @@ void agrega_nuevo()
 //Imprime un diccionario
 void imprimir()
 {
-	long punt,cab,caba,punta;
+	long punt,cab,caba,punta,pos,fin;
 	FILE *arch;
 	Enti entidad;
 	Atri atrib;
@@ -148,6 +148,24 @@ void imprimir()
 			else
 			{
 				printf("No tiene atributos\n");
+			}
+			if(entidad.pundata!=-1)
+			{
+				printf("Lista de datos:\n");
+				fseek(arch,entidad.puntatri,SEEK_SET);
+				pos=ftell(arch);
+				while(fin!=-1)
+				{
+					while(fread(&atrib,sizeof(Atri),1,arch)==1)
+					{
+					
+						fseek(arch,atrib.puntsig,SEEK_SET);
+						if(atrib.puntsig==-1)
+						{
+							break;
+						}
+					}
+				}
 			}
 			//Agregar datos con while
 
@@ -305,6 +323,7 @@ void men_dat(FILE *arch)
 			modifica_datos(arch,nom);
 			break;
 		case 4:
+			menu2();
 			break;
 		}
 	}
