@@ -42,9 +42,9 @@ void elimina_atri(FILE *arch,char atri[],char enti[]);
 void imprimir_atri(FILE *arch,char atri[],char enti[]);
 void modifica_atri(FILE *arch,char atri[],char enti[]);
 //Funciones de datos
-void agrega_dato(FILE *arch,char nom[]);
-void elimina_datos(FILE *arch,char nom[]);
-void modifica_datos(FILE *arch,char nom[]);
+void agrega_dato(FILE *arch,char enti[]);
+void elimina_datos(FILE *arch,char enti[]);
+void modifica_datos(FILE *arch,char enti[]);
 
 int main() 
 {
@@ -187,17 +187,16 @@ void menu2()
 		printf("3. volver al menu\n");
 		printf("Dame que opcion quieres:");
 		scanf("%d",&op);
-	
 		switch(op)
 		{
 			case 1:
-				men_ent(arch);
-				break;
+					men_ent(arch);
+					break;
 			case 2:
-				men_dat(arch);
-				break;
+					men_dat(arch);
+					break;
 			case 3:
-				break;
+					break;
 		}
 	}
 	fclose(arch);
@@ -300,10 +299,10 @@ void men_dat(FILE *arch)
 			agrega_dato(arch,nom);
 			break;
 		case 2:
-			elimina_dato(arch,nom);
+			elimina_datos(arch,nom);
 			break;
 		case 3:
-			modifica_dato(arch,nom);
+			modifica_datos(arch,nom);
 			break;
 		case 4:
 			break;
@@ -469,7 +468,7 @@ void cambnom_enti(FILE *arch,char nom[])
 //Agrega atributo
 void agrega_atri(FILE *arch,char atri[],char enti[])
 {
-	int val;
+	int val,v=0;
 	long cab,valant=-1,pos,ini,aux;
 	Atri nueva,act;
 	Enti entidad;
@@ -477,8 +476,9 @@ void agrega_atri(FILE *arch,char atri[],char enti[])
 	strcat(nueva.nom,atri);
 	printf("Dame el valor boleano 1 o 0:");
 	scanf("%d",&val);
-	if(val==1)
+	if(val==1&&v==0)
 	{
+		v=1;
 		nueva.prymary=true;
 	}
 	else
@@ -581,6 +581,10 @@ void elimina_atri(FILE *arch,char atri[],char enti[])
 			fread(&entidad,sizeof(Enti),1,arch);
 			if(strcmp(enti,entidad.nom)==0)
 			{	
+				if(entidad.pundata!=-1)
+				{
+					return;
+				}
 				if(entidad.puntatri==-1)
 				{
 					printf("No hay atributo para eliminar\n");
@@ -683,7 +687,7 @@ void imprimir_atri(FILE *arch,char atri[],char enti[])
 //modifica atributo
 void modifica_atri(FILE *arch,char atri[],char enti[])
 {
-	int val;
+	int val,v=0;
 	long cab,valant=-1,pos,ini,aux,dire;
 	Atri nueva,act,nuevoatri;
 	Enti entidad;
@@ -695,8 +699,9 @@ void modifica_atri(FILE *arch,char atri[],char enti[])
 	fflush(stdin);
 	printf("Dame el valor boleano 1 o 0:");
 	scanf("%d",&val);
-	if(val==1)
+	if(val==1&&v==0)
 	{
+		v=1;
 		nuevoatri.prymary=true;
 	}
 	else
@@ -765,17 +770,153 @@ void modifica_atri(FILE *arch,char atri[],char enti[])
 
 
 //Funciones de datos
-void agrega_dato(FILE *arch,char nom[])
+void agrega_dato(FILE *arch,char enti[])
+{
+
+//Variables para el primer caso 
+	Atri aux3;
+	int val;
+	float val1;
+	char val2[120];
+	long val3;
+//
+	long cab,valant=-1,pos,ini,aux;
+	
+	Atri ant,act;
+	Enti entidad;
+	fseek(arch, 0, SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	if(cab==-1)
+	{
+		printf("No hay entidades a la cual agregar atributos\n");
+		return;
+	}
+		while(cab!=-1)
+		{	
+			fseek(arch, cab, SEEK_SET);
+			fread(&entidad,sizeof(Enti),1,arch);
+			if(strcmp(enti,entidad.nom)==0)
+			{	
+				if(entidad.pundata==-1)
+				{
+					fseek(arch,0,SEEK_END);
+					ini=ftell(arch);
+					fseek(arch,entidad.puntatri,SEEK_SET);
+					while(aux3.puntsig)
+					{
+						fread(&act,sizeof(Atri),1,arch);
+						if(act.tipo=='i')
+						{
+							printf("Dame el %s que deseas ingresar:",aux3.nom);
+							scanf("%d",&val);
+							fseek(arch,0,SEEK_END);
+							fwrite(&val,sizeof(int),1,arch);
+						}
+						if(act.tipo=='f')
+						{
+							printf("Dame el %s numero flotante que deseas ingresar:",aux3.nom);
+							scanf("%f",&val1);
+							fseek(arch,0,SEEK_END);
+							fwrite(&val1,sizeof(float),1,arch);
+						}
+						if(act.tipo=='c')
+						{
+							printf("Dame el %s cadena que deseas ingresar:",aux3.nom);
+							scanf("%s",val2);
+							fseek(arch,0,SEEK_END);
+							fwrite(val2,sizeof(val2),1,arch);
+						}
+						if(act.tipo=='l')
+						{
+							printf("Dame el %s numero long que deseas ingresar:",aux3.nom);
+							scanf("%ld",&val3);
+							fseek(arch,0,SEEK_END);
+							fwrite(&val3,sizeof(long),1,arch);
+						}
+						if(act.puntsig==-1)
+						{
+							break;
+						}
+						fseek(arch,act.puntsig,SEEK_SET);
+					}
+					fseek(arch,cab+offsetof(Enti,pundata),SEEK_SET);
+					fwrite(&ini,sizeof(long),1,arch);
+					fflush(arch);
+               		return;
+				}
+				else
+				{
+					valant=-1;
+					aux=entidad.puntatri;
+					while(aux!=-1)
+					{
+						fseek(arch,aux,SEEK_SET);
+						fread(&act,sizeof(Atri),1,arch);
+						fseek(arch, 0, SEEK_END);
+						pos=ftell(arch);
+						act.puntsig=aux;
+							if(act.tipo=='i')
+							{
+								printf("Dame el %s que deseas ingresar:",aux3.nom);
+								scanf("%d",&val);
+								fseek(arch,0,SEEK_END);
+								fwrite(&val,sizeof(int),1,arch);
+							}
+							if(act.tipo=='f')
+							{
+								printf("Dame el %s numero flotante que deseas ingresar:",aux3.nom);
+								scanf("%f",&val1);
+								fseek(arch,0,SEEK_END);
+								fwrite(&val1,sizeof(float),1,arch);
+							}
+							if(act.tipo=='c')
+							{
+								printf("Dame el %s cadena que deseas ingresar:",aux3.nom);
+								scanf("%s",val2);
+								fseek(arch,0,SEEK_END);
+								fwrite(val2,sizeof(val2),1,arch);
+							}
+							if(act.tipo=='l')
+							{
+								printf("Dame el %s numero long que deseas ingresar:",aux3.nom);
+								scanf("%ld",&val3);
+								fseek(arch,0,SEEK_END);
+								fwrite(&val3,sizeof(long),1,arch);
+							}
+                			if(valant==-1)
+							{	
+								fseek(arch, cab + offsetof(Enti, puntatri), SEEK_SET);
+               					fwrite(&pos,sizeof(long),1,arch);
+							}
+							else
+							{
+								fseek(arch, valant + offsetof(Atri, puntsig), SEEK_SET);
+								fwrite(&pos,sizeof(long),1,arch);
+							}
+							fflush(arch);
+               				return;
+						valant=aux;
+						aux=act.puntsig;
+					}
+					fseek(arch,0,SEEK_END);
+					pos=ftell(arch);
+					fwrite(&aux,sizeof(Atri),1,arch);
+					fseek(arch, valant + offsetof(Atri, puntsig), SEEK_SET);
+					fwrite(&pos,sizeof(long),1,arch);
+					fflush(arch);
+					return;
+				}
+			}
+			cab=entidad.puntsig;
+		}
+}
+
+void elimina_datos(FILE *arch,char enti[])
 {
 
 }
 
-void elimina_datos(FILE *arch,char nom[])
-{
-
-}
-
-void modifica_datos(FILE *arch,char nom[])
+void modifica_datos(FILE *arch,char enti[])
 {
 	
 }
