@@ -348,7 +348,7 @@ void men_dat(FILE *arch)
 	printf("Dame el nombre la entidad a usar:");
 	scanf("%s",nom);
 	int op=0;
-	while(op!=5)
+	while(op!=4)
 	{
 		printf("1. Agregar dato\n");
 		printf("2. Eliminar dato\n");
@@ -369,7 +369,7 @@ void men_dat(FILE *arch)
 			modifica_datos(arch,nom);
 			break;
 		case 4:
-			menu2();
+			main();
 			break;
 		}
 	}
@@ -840,12 +840,13 @@ void agrega_dato(FILE *arch,char enti[])
 
 //Variables para el primer caso 
 	Atri aux3;
-	int val;
+	int val,op;
 	float val1;
 	char val2[120];
 	long val3;
+	bool val4;
 //
-	long cab,valant=-1,pos,ini,aux;
+	long cab,valant=-1,pos,ini,aux,fin,constante=-1;
 	Atri atrib;
 	Enti entidad;
 	fseek(arch, 0, SEEK_SET);
@@ -864,39 +865,58 @@ void agrega_dato(FILE *arch,char enti[])
 				if(entidad.pundata==-1)
 				{
 					fseek(arch,0,SEEK_END);
-					ini=ftell(arch);
-					fseek(arch,cab+offsetof(Enti,pundata),SEEK_SET);
-					fwrite(&ini,sizeof(long),1,arch);
-					while(atrib.puntsig!=-1)
+					fin=ftell(arch);
+					ini=fin;
+					fseek(arch,entidad.puntatri,SEEK_SET);
+					while(fread(&atrib,sizeof(Atri),1,arch)==1)
 					{
-						fread(&atrib,sizeof(Atri),1,arch);
-						if(atrib.tipo=='i'&&atrib.prymari==true)
+						if(atrib.tipo=='i')
 						{
-							printf("Dame el %s que deseas ingresar:",atrib.nom);
+							fseek(arch,fin,SEEK_SET);
+							printf("Dame el valor entero:");
 							scanf("%d",&val);
-							fseek(arch,0,SEEK_END);
-							fwrite(&val,sizeof(int),1,arch);
+							fread(&val,sizeof(int),1,arch);
+							fin=fin+sizeof(int);
 						}
-						if(atrib.tipo=='f'&&atrib.prymari==true)
+						if(atrib.tipo=='f')
 						{
-							printf("Dame el %s numero flotante que deseas ingresar:",aux3.nom);
+							fseek(arch,fin,SEEK_SET);
+							printf("Dame el valor flotante:");
 							scanf("%f",&val1);
-							fseek(arch,0,SEEK_END);
-							fwrite(&val1,sizeof(float),1,arch);
+							fread(&val1,sizeof(float),1,arch);
+							fin=fin+sizeof(float);
 						}
-						if(atrib.tipo=='c'&&atrib.prymari==true)
+						if(atrib.tipo=='c')
 						{
-							printf("Dame el %s cadena que deseas ingresar:",aux3.nom);
-							scanf("%s",val2);
-							fseek(arch,0,SEEK_END);
-							fwrite(val2,sizeof(val2),1,arch);
+							fseek(arch,fin,SEEK_SET);
+							printf("Dame el valor entero:");
+							scanf("%s", val2);
+							fread(val2,sizeof(atrib.tam),1,arch);
+							fin=fin+sizeof(atrib.tam);
 						}
 						if(atrib.tipo=='l')
 						{
-							printf("Dame el %s numero long que deseas ingresar:",aux3.nom);
+							fseek(arch,fin,SEEK_SET);
+							printf("Dame el valor long:");
 							scanf("%ld",&val3);
-							fseek(arch,0,SEEK_END);
-							fwrite(&val3,sizeof(long),1,arch);
+							fread(&val3,sizeof(long),1,arch);
+							fin=fin+sizeof(long);
+						}
+						if(atrib.tipo=='b')
+						{
+							fseek(arch,fin,SEEK_SET);
+							printf("Dame el valor booleano 1 o 0:");
+							scanf("%d",&op);
+							if(op==0)
+							{
+								val4=false;
+							}
+							if(op==1)
+							{
+								val4=true;
+							}	
+							fread(&val4,sizeof(bool),1,arch);
+							fin=fin+sizeof(bool);
 						}
 						if(atrib.puntsig==-1)
 						{
@@ -904,6 +924,7 @@ void agrega_dato(FILE *arch,char enti[])
 						}
 						fseek(arch,atrib.puntsig,SEEK_SET);
 					}
+					fwrite(&constante,sizeof(long),1,arch);
 					fseek(arch,cab+offsetof(Enti,pundata),SEEK_SET);
 					fwrite(&ini,sizeof(long),1,arch);
 					fflush(arch);
