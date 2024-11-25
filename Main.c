@@ -109,7 +109,8 @@ void imprimir()
 	int val;
 	float val1;
 	char val2[120];
-	long val3;
+	long val3,puntdat;
+	bool val4;
 	printf("Dame el nombre del archivo que quieres abrir:");
 	scanf("%s",nom);
 	arch=fopen(nom,"r");
@@ -160,27 +161,43 @@ void imprimir()
 				fin=entidad.pundata;
 				while(fin!=-1)
 				{
+					fseek(arch,entidad.puntatri,SEEK_SET);
 					while(fread(&atrib,sizeof(Atri),1,arch)==1)
 					{
 						if(atrib.tipo=='i')
 						{
+							fseek(arch,fin,SEEK_SET);
 							fread(&val,sizeof(int),1,arch);
 							printf("%d-",val);
+							fin=fin+sizeof(int);
 						}
 						if(atrib.tipo=='f')
 						{
+							fseek(arch,fin,SEEK_SET);
 							fread(&val1,sizeof(float),1,arch);
 							printf("%.2f-",val1);
+							fin=fin+sizeof(float);
 						}
 						if(atrib.tipo=='c')
 						{
-							fread(&val2,sizeof(val2),1,arch);
+							fseek(arch,fin,SEEK_SET);
+							fread(&val2,sizeof(atrib.tam),1,arch);
 							printf("%s-",val2);
+							fin=fin+sizeof(atrib.tam);
 						}
 						if(atrib.tipo=='l')
 						{
+							fseek(arch,fin,SEEK_SET);
 							fread(&val3,sizeof(long),1,arch);
 							printf("%ld-",val3);
+							fin=fin+sizeof(long);
+						}
+						if(atrib.tipo=='b')
+						{
+							fseek(arch,fin,SEEK_SET);
+							fread(&val4,sizeof(bool),1,arch);
+							printf("%d-",val4);
+							fin=fin+sizeof(bool);
 						}
 						if(atrib.puntsig==-1)
 						{
@@ -189,7 +206,9 @@ void imprimir()
 						fseek(arch,atrib.puntsig,SEEK_SET);
 					}
 					printf("\n");
-					fin=-1;
+					fseek(arch,fin,SEEK_SET);
+					fread(&puntdat,sizeof(long),1,arch);
+					fin=puntdat;
 				}
 			}
 			else
@@ -850,7 +869,7 @@ void agrega_dato(FILE *arch,char enti[])
 					fwrite(&ini,sizeof(long),1,arch);
 					while(atrib.puntsig!=-1)
 					{
-						fread(&atrib,sizeof(Atri),1,arch)
+						fread(&atrib,sizeof(Atri),1,arch);
 						if(atrib.tipo=='i'&&atrib.prymari==true)
 						{
 							printf("Dame el %s que deseas ingresar:",atrib.nom);
