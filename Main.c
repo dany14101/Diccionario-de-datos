@@ -166,7 +166,7 @@ void imprimir()
 					{
 						if(atrib.tipo=='i')
 						{
-							fseek(arch,fin,SEEK_SET);
+							fseek(arch,0,SEEK_END);
 							fread(&val,sizeof(int),1,arch);
 							printf("%d-",val);
 							fin=fin+sizeof(int);
