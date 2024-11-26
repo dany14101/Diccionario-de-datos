@@ -927,6 +927,93 @@ void agrega_dato(FILE *arch,char enti[])
 				{
 					valant=-1;
 					aux=entidad.puntatri;
+					fin=entidad.pundata;
+					//Va a buscar dato en orden
+					while(fin!=-1)
+					{
+						fseek(arch,aux,SEEK_SET);
+						while(fread(&atrib,sizeof(Atri),1,arch)==1)
+						{
+							fseek(arch,fin,SEEK_SET);
+							if(atrib.tipo=='i')
+							{
+								fin=fin+sizeof(int);
+							}
+							if(atrib.tipo=='f')
+							{
+								fin=fin+sizeof(float);
+							}
+							if(atrib.tipo=='c')
+							{
+								fin=fin+sizeof(val2);
+							}
+							if(atrib.tipo=='l')
+							{
+								fin=fin+sizeof(long);
+							}
+							if(atrib.tipo=='b')
+							{
+								fin=fin+sizeof(bool);
+							}
+							if(atrib.puntsig=-1)
+							{
+								break;
+							}
+							fseek(arch,atrib.puntsig,SEEK_SET);
+						}
+						fread(&fin,sizeof(long),1,arch);
+					}
+					//Pega el dato
+					fseek(arch,0,SEEK_END);
+					fin=ftell(arch);
+					ini=fin;
+					fseek(arch,entidad.puntatri,SEEK_SET);
+					while(fread(&atrib,sizeof(Atri),1,arch)==1)
+					{
+						fseek(arch,0,SEEK_END);
+						pos=ftell(arch);
+						if(atrib.tipo=='i')
+						{
+							printf("Dame el valor entero:");
+							scanf("%d",&val);
+							fwrite(&val,sizeof(int),1,arch);
+						}
+						if(atrib.tipo=='f')
+						{
+				
+							printf("Dame el valor flotante:");
+							scanf("%f",&val1);
+							fwrite(&val1,sizeof(float),1,arch);
+							
+						}
+						if(atrib.tipo=='c')
+						{
+							
+							printf("Dame el valor entero:");
+							scanf("%s", val2);
+							fwrite(val2,sizeof(atrib.tam)+1,1,arch);
+							
+						}
+						if(atrib.tipo=='l')
+						{
+							
+							printf("Dame el valor long:");
+							scanf("%ld",&val3);
+							fwrite(&val3,sizeof(long),1,arch);
+							
+						}
+						if(atrib.tipo=='b')
+						{
+							
+							printf("Dame el valor booleano 1 o 0:");
+							scanf("%d",&op);
+							val4=(op==1);
+							fwrite(&val4,sizeof(bool),1,arch);
+							
+						}
+							}
+						}
+					}
 					while(aux!=-1)
 					{
 						fseek(arch,aux,SEEK_SET);
