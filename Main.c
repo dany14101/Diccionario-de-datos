@@ -891,7 +891,7 @@ void agrega_dato(FILE *arch,char enti[])
 							
 							printf("Dame el valor entero:");
 							scanf("%s", val2);
-							fwrite(val2,sizeof(atrib.tam),1,arch);
+							fwrite(val2,sizeof(atrib.tam)+1,1,arch);
 							
 						}
 						if(atrib.tipo=='l')
@@ -977,15 +977,68 @@ void agrega_dato(FILE *arch,char enti[])
 							fflush(arch);
 							valant=aux;
 							aux=atrib.puntsig;
-               				return;
+               				if(aux==-1)
+							{
+								fwrite(&constante,sizeof(long),1,arch);
+								return;
+							}
 					}
 					fseek(arch,0,SEEK_END);
-					pos=ftell(arch);
-					fwrite(&atrib,sizeof(Atri),1,arch);
-					fseek(arch, valant + offsetof(Atri, puntsig), SEEK_SET);
-					fwrite(&pos,sizeof(long),1,arch);
+					fin=ftell(arch);
+					ini=fin;
+					fseek(arch,entidad.puntatri,SEEK_SET);
+					while(fread(&atrib,sizeof(Atri),1,arch)==1)
+					{
+						fseek(arch,0,SEEK_END);
+						pos=ftell(arch);
+						if(atrib.tipo=='i')
+						{
+							printf("Dame el valor entero:");
+							scanf("%d",&val);
+							fwrite(&val,sizeof(int),1,arch);
+						}
+						if(atrib.tipo=='f')
+						{
+				
+							printf("Dame el valor flotante:");
+							scanf("%f",&val1);
+							fwrite(&val1,sizeof(float),1,arch);
+							
+						}
+						if(atrib.tipo=='c')
+						{
+							
+							printf("Dame el valor entero:");
+							scanf("%s", val2);
+							fwrite(val2,sizeof(atrib.tam)+1,1,arch);
+							
+						}
+						if(atrib.tipo=='l')
+						{
+							
+							printf("Dame el valor long:");
+							scanf("%ld",&val3);
+							fwrite(&val3,sizeof(long),1,arch);
+							
+						}
+						if(atrib.tipo=='b')
+						{
+							
+							printf("Dame el valor booleano 1 o 0:");
+							scanf("%d",&op);
+							val4=(op==1);
+							fwrite(&val4,sizeof(bool),1,arch);
+							
+						}
+						if(atrib.puntsig==-1)
+						{
+							break;
+						}
+						fseek(arch,atrib.puntsig,SEEK_SET);
+					}
+					fwrite(&constante,sizeof(long),1,arch);
 					fflush(arch);
-					return;
+               		return;
 				}
 			}
 			cab=entidad.puntsig;
