@@ -166,7 +166,7 @@ void imprimir()
 					{
 						if(atrib.tipo=='i')
 						{
-							fseek(arch,0,SEEK_END);
+							fseek(arch,fin,SEEK_SET);
 							fread(&val,sizeof(int),1,arch);
 							printf("%d-",val);
 							fin=fin+sizeof(int);
@@ -870,53 +870,46 @@ void agrega_dato(FILE *arch,char enti[])
 					fseek(arch,entidad.puntatri,SEEK_SET);
 					while(fread(&atrib,sizeof(Atri),1,arch)==1)
 					{
+						fseek(arch,0,SEEK_END);
+						pos=ftell(arch);
 						if(atrib.tipo=='i')
 						{
-							fseek(arch,fin,SEEK_SET);
 							printf("Dame el valor entero:");
 							scanf("%d",&val);
-							fread(&val,sizeof(int),1,arch);
-							fin=fin+sizeof(int);
+							fwrite(&val,sizeof(int),1,arch);
 						}
 						if(atrib.tipo=='f')
 						{
-							fseek(arch,fin,SEEK_SET);
+				
 							printf("Dame el valor flotante:");
 							scanf("%f",&val1);
-							fread(&val1,sizeof(float),1,arch);
-							fin=fin+sizeof(float);
+							fwrite(&val1,sizeof(float),1,arch);
+							
 						}
 						if(atrib.tipo=='c')
 						{
-							fseek(arch,fin,SEEK_SET);
+							
 							printf("Dame el valor entero:");
 							scanf("%s", val2);
-							fread(val2,sizeof(atrib.tam),1,arch);
-							fin=fin+sizeof(atrib.tam);
+							fwrite(val2,sizeof(atrib.tam),1,arch);
+							
 						}
 						if(atrib.tipo=='l')
 						{
-							fseek(arch,fin,SEEK_SET);
+							
 							printf("Dame el valor long:");
 							scanf("%ld",&val3);
-							fread(&val3,sizeof(long),1,arch);
-							fin=fin+sizeof(long);
+							fwrite(&val3,sizeof(long),1,arch);
+							
 						}
 						if(atrib.tipo=='b')
 						{
-							fseek(arch,fin,SEEK_SET);
+							
 							printf("Dame el valor booleano 1 o 0:");
 							scanf("%d",&op);
-							if(op==0)
-							{
-								val4=false;
-							}
-							if(op==1)
-							{
-								val4=true;
-							}	
-							fread(&val4,sizeof(bool),1,arch);
-							fin=fin+sizeof(bool);
+							val4=(op==1);
+							fwrite(&val4,sizeof(bool),1,arch);
+							
 						}
 						if(atrib.puntsig==-1)
 						{
@@ -940,34 +933,36 @@ void agrega_dato(FILE *arch,char enti[])
 						fread(&atrib,sizeof(Atri),1,arch);
 						fseek(arch, 0, SEEK_END);
 						pos=ftell(arch);
-						atrib.puntsig=aux;
 							if(atrib.tipo=='i')
 							{
-								printf("Dame el %s que deseas ingresar:",aux3.nom);
+								printf("Dame el  que deseas ingresar:");
 								scanf("%d",&val);
-								fseek(arch,0,SEEK_END);
 								fwrite(&val,sizeof(int),1,arch);
 							}
 							if(atrib.tipo=='f')
 							{
-								printf("Dame el %s numero flotante que deseas ingresar:",aux3.nom);
+								printf("Dame el numero flotante que deseas ingresar:");
 								scanf("%f",&val1);
-								fseek(arch,0,SEEK_END);
 								fwrite(&val1,sizeof(float),1,arch);
 							}
 							if(atrib.tipo=='c')
 							{
-								printf("Dame el %s cadena que deseas ingresar:",aux3.nom);
+								printf("Dame el cadena que deseas ingresar:");
 								scanf("%s",val2);
-								fseek(arch,0,SEEK_END);
 								fwrite(val2,sizeof(val2),1,arch);
 							}
 							if(atrib.tipo=='l')
 							{
-								printf("Dame el %s numero long que deseas ingresar:",aux3.nom);
+								printf("Dame el numero long que deseas ingresar:");
 								scanf("%ld",&val3);
-								fseek(arch,0,SEEK_END);
 								fwrite(&val3,sizeof(long),1,arch);
+							}
+							if(atrib.tipo=='b')
+							{
+								printf("Dame elvalor booleano 1 o 0:");
+								scanf("%d",&op);
+								val4=(op==1);
+								fwrite(&val4,sizeof(long),1,arch);
 							}
                 			if(valant==-1)
 							{	
@@ -980,9 +975,9 @@ void agrega_dato(FILE *arch,char enti[])
 								fwrite(&pos,sizeof(long),1,arch);
 							}
 							fflush(arch);
+							valant=aux;
+							aux=atrib.puntsig;
                				return;
-						valant=aux;
-						aux=atrib.puntsig;
 					}
 					fseek(arch,0,SEEK_END);
 					pos=ftell(arch);
