@@ -990,6 +990,7 @@ void agrega_dato(FILE *arch,char enti[])
 			}
 			cab=entidad.puntsig;
 		}
+		fflush(stdin);
 }
 
 void elimina_datos(FILE *arch,char enti[])
