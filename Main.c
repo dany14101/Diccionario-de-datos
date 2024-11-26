@@ -965,8 +965,7 @@ void agrega_dato(FILE *arch,char enti[])
 					}
 					//Pega el dato
 					fseek(arch,0,SEEK_END);
-					fin=ftell(arch);
-					ini=fin;
+					ini=ftell(arch);
 					fseek(arch,entidad.puntatri,SEEK_SET);
 					while(fread(&atrib,sizeof(Atri),1,arch)==1)
 					{
@@ -1011,64 +1010,6 @@ void agrega_dato(FILE *arch,char enti[])
 							fwrite(&val4,sizeof(bool),1,arch);
 							
 						}
-							}
-						}
-					}
-					while(aux!=-1)
-					{
-						fseek(arch,aux,SEEK_SET);
-						fread(&atrib,sizeof(Atri),1,arch);
-						fseek(arch, 0, SEEK_END);
-						pos=ftell(arch);
-							if(atrib.tipo=='i')
-							{
-								printf("Dame el  que deseas ingresar:");
-								scanf("%d",&val);
-								fwrite(&val,sizeof(int),1,arch);
-							}
-							if(atrib.tipo=='f')
-							{
-								printf("Dame el numero flotante que deseas ingresar:");
-								scanf("%f",&val1);
-								fwrite(&val1,sizeof(float),1,arch);
-							}
-							if(atrib.tipo=='c')
-							{
-								printf("Dame el cadena que deseas ingresar:");
-								scanf("%s",val2);
-								fwrite(val2,sizeof(val2),1,arch);
-							}
-							if(atrib.tipo=='l')
-							{
-								printf("Dame el numero long que deseas ingresar:");
-								scanf("%ld",&val3);
-								fwrite(&val3,sizeof(long),1,arch);
-							}
-							if(atrib.tipo=='b')
-							{
-								printf("Dame elvalor booleano 1 o 0:");
-								scanf("%d",&op);
-								val4=(op==1);
-								fwrite(&val4,sizeof(long),1,arch);
-							}
-                			if(valant==-1)
-							{	
-								fseek(arch, cab + offsetof(Enti, puntatri), SEEK_SET);
-               					fwrite(&pos,sizeof(long),1,arch);
-							}
-							else
-							{
-								fseek(arch, valant + offsetof(Atri, puntsig), SEEK_SET);
-								fwrite(&pos,sizeof(long),1,arch);
-							}
-							fflush(arch);
-							valant=aux;
-							aux=atrib.puntsig;
-               				if(aux==-1)
-							{
-								fwrite(&constante,sizeof(long),1,arch);
-								return;
-							}
 					}
 					fseek(arch,0,SEEK_END);
 					fin=ftell(arch);
