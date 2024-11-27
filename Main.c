@@ -846,7 +846,7 @@ void agrega_dato(FILE *arch,char enti[])
 	long val3;
 	bool val4;
 //
-	long cab,valant=-1,pos,ini,aux,fin,constante=-1;
+	long cab,valant=-1,pos,ini,aux,fin,fin1,constante=-1;
 	Atri atrib;
 	Enti entidad;
 	fseek(arch, 0, SEEK_SET);
@@ -923,32 +923,33 @@ void agrega_dato(FILE *arch,char enti[])
 					valant=-1;
 					aux=entidad.puntatri;
 					fin=entidad.pundata;
+					fin1=fin;
 					//Va a buscar dato en orden
 					while(fin!=-1)
 					{
 						fseek(arch,aux,SEEK_SET);
 						while(fread(&atrib,sizeof(Atri),1,arch)==1)
 						{
-							fseek(arch,fin,SEEK_SET);
+							fseek(arch,fin1,SEEK_SET);
 							if(atrib.tipo=='i')
 							{
-								fin=fin+sizeof(int);
+								fin1=fin1+sizeof(int);
 							}
 							if(atrib.tipo=='f')
 							{
-								fin=fin+sizeof(float);
+								fin1=fin1+sizeof(float);
 							}
 							if(atrib.tipo=='c')
 							{
-								fin=fin+sizeof(val2);
+								fin1=fin1+sizeof(val2);
 							}
 							if(atrib.tipo=='l')
 							{
-								fin=fin+sizeof(long);
+								fin1=fin1+sizeof(long);
 							}
 							if(atrib.tipo=='b')
 							{
-								fin=fin+sizeof(bool);
+								fin1=fin1+sizeof(bool);
 							}
 							if(atrib.puntsig==-1)
 							{
@@ -956,6 +957,8 @@ void agrega_dato(FILE *arch,char enti[])
 							}
 							fseek(arch,atrib.puntsig,SEEK_SET);
 						}
+						fseek(arch,fin1,SEEK_SET);
+						fin1=ftell(arch);
 						fread(&fin,sizeof(long),1,arch);
 					}
 					//Pega el dato
@@ -1005,10 +1008,15 @@ void agrega_dato(FILE *arch,char enti[])
 							fwrite(&val4,sizeof(bool),1,arch);
 							
 						}
+						if(atrib.puntsig==-1)
+						{
+							break;
+						}
+						fseek(arch,atrib.puntsig,SEEK_SET);
 					}
+					fseek(arch,0,SEEK_END);
 					fwrite(&constante,sizeof(long),1,arch);
-					fin=fin-sizeof(long);
-					fseek(arch,fin,SEEK_CUR);
+					fseek(arch,fin1,SEEK_SET);
 					fwrite(&ini,sizeof(long),1,arch);
 					fflush(arch);
                		return;
