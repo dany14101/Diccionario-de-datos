@@ -101,7 +101,7 @@ void agrega_nuevo()
 //Imprime un diccionario
 void imprimir()
 {
-	long punt,cab,caba,punta,pos,fin;
+	long punt,cab,caba,punta,pos,fin,fin1;
 	FILE *arch;
 	Enti entidad;
 	Atri atrib;
@@ -159,6 +159,7 @@ void imprimir()
 				printf("Lista de datos:\n");
 				fseek(arch,entidad.pundata,SEEK_SET);
 				fin=entidad.pundata;
+				fin1=fin;
 				while(fin!=-1)
 				{
 					fseek(arch,entidad.puntatri,SEEK_SET);
@@ -166,38 +167,38 @@ void imprimir()
 					{
 						if(atrib.tipo=='i')
 						{
-							fseek(arch,fin,SEEK_SET);
+							fseek(arch,fin1,SEEK_SET);
 							fread(&val,sizeof(int),1,arch);
 							printf("%d-",val);
-							fin=fin+sizeof(int);
+							fin1=fin1+sizeof(int);
 						}
 						if(atrib.tipo=='f')
 						{
-							fseek(arch,fin,SEEK_SET);
+							fseek(arch,fin1,SEEK_SET);
 							fread(&val1,sizeof(float),1,arch);
 							printf("%.2f-",val1);
-							fin=fin+sizeof(float);
+							fin1=fin1+sizeof(float);
 						}
 						if(atrib.tipo=='c')
 						{
-							fseek(arch,fin,SEEK_SET);
+							fseek(arch,fin1,SEEK_SET);
 							fread(&val2,sizeof(val2),1,arch);
 							printf("%s-",val2);
-							fin=fin+sizeof(val2);
+							fin1=fin1+sizeof(val2);
 						}
 						if(atrib.tipo=='l')
 						{
-							fseek(arch,fin,SEEK_SET);
+							fseek(arch,fin1,SEEK_SET);
 							fread(&val3,sizeof(long),1,arch);
 							printf("%ld-",val3);
-							fin=fin+sizeof(long);
+							fin1=fin1+sizeof(long);
 						}
 						if(atrib.tipo=='b')
 						{
-							fseek(arch,fin,SEEK_SET);
+							fseek(arch,fin1,SEEK_SET);
 							fread(&val4,sizeof(bool),1,arch);
 							printf("%d-",val4);
-							fin=fin+sizeof(bool);
+							fin1=fin1+sizeof(bool);
 						}
 						if(atrib.puntsig==-1)
 						{
@@ -208,7 +209,8 @@ void imprimir()
 					fread(&fin,sizeof(long),1,arch);
 					printf("%ld",fin);
 					printf("\n");
-					fseek(arch,fin,SEEK_SET);
+					fin1=fin;
+					fseek(arch,fin1,SEEK_SET);
 				}
 			}
 			else
@@ -1250,9 +1252,9 @@ void modifica_datos(FILE *arch,char enti[])
 						}
 						if(atrib.tipo=='c')
 						{
-							printf("Dame el valor entero:");
+							printf("Dame el valor cadena:");
 							scanf("%s", val2);
-							fwrite(val2,sizeof(atrib.tam)+1,1,arch);
+							fwrite(val2,sizeof(val2),1,arch);
 							prueb=prueb+sizeof(val2);
 						}
 						if(atrib.tipo=='l')
@@ -1307,7 +1309,7 @@ void modifica_datos(FILE *arch,char enti[])
 							
 							printf("Dame el valor entero:");
 							scanf("%s", val2);
-							fwrite(val2,sizeof(atrib.tam)+1,1,arch);
+							fwrite(val2,sizeof(val2),1,arch);
 							prueb=prueb+sizeof(val2);
 						}
 						if(atrib.tipo=='l')
