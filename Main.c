@@ -181,9 +181,9 @@ void imprimir()
 						if(atrib.tipo=='c')
 						{
 							fseek(arch,fin,SEEK_SET);
-							fread(&val2,sizeof(atrib.tam),1,arch);
+							fread(&val2,sizeof(val2),1,arch);
 							printf("%s-",val2);
-							fin=fin+sizeof(atrib.tam);
+							fin=fin+sizeof(val2);
 						}
 						if(atrib.tipo=='l')
 						{
@@ -842,7 +842,7 @@ void agrega_dato(FILE *arch,char enti[])
 	Atri aux3;
 	int val,op;
 	float val1;
-	char val2[120];
+	char val2[120]="";
 	long val3;
 	bool val4;
 //
@@ -886,9 +886,9 @@ void agrega_dato(FILE *arch,char enti[])
 						}
 						if(atrib.tipo=='c')
 						{
-							printf("Dame el valor entero:");
+							printf("Dame el valor de cadena:");
 							scanf("%s", val2);
-							fwrite(val2,sizeof(atrib.tam)+1,1,arch);
+							fwrite(val2,sizeof(val2),1,arch);
 						}
 						if(atrib.tipo=='l')
 						{
@@ -1029,7 +1029,95 @@ void agrega_dato(FILE *arch,char enti[])
 
 void elimina_datos(FILE *arch,char enti[])
 {
-
+	//Variables para el primer caso 
+	Atri aux3;
+	int val,op,ta=0;
+	float val1;
+	char val2[120]="";
+	long val3;
+	long arr[200];
+	bool val4;
+//
+	long cab,valant=-1,pos,ini,aux,fin,fin1,constante=-1;
+	Atri atrib;
+	Enti entidad;
+	fseek(arch, 0, SEEK_SET);
+	fread(&cab,sizeof(long),1,arch);
+	if(cab==-1)
+	{
+		printf("No hay entidades a la cual agregar atributos\n");
+		return;
+	}
+		while(cab!=-1)
+		{	
+			fseek(arch, cab, SEEK_SET);
+			fread(&entidad,sizeof(Enti),1,arch);
+			if(strcmp(enti,entidad.nom)==0)
+			{	
+				valant=-1;
+				aux=entidad.puntatri;
+				fin=entidad.pundata;
+				fin1=fin;
+				printf("%d)",ta);
+				//Va a buscar dato en orden
+				while(fin!=-1)
+				{
+					fseek(arch,aux,SEEK_SET);
+					while(fread(&atrib,sizeof(Atri),1,arch)==1)
+					{
+						if(atrib.tipo=='i')
+						{
+							fseek(arch,fin1,SEEK_SET);
+							fread(&val,sizeof(int),1,arch);
+							printf("%d-",val);
+							fin1=fin1+sizeof(int);
+						}
+						if(atrib.tipo=='f')
+						{
+							fseek(arch,fin1,SEEK_SET);
+							fread(&val1,sizeof(float),1,arch);
+							printf("%.2f-",val1);
+							fin1=fin1+sizeof(float);
+						}
+						if(atrib.tipo=='c')
+						{
+							fseek(arch,fin1,SEEK_SET);
+							fread(&val2,sizeof(val2),1,arch);
+							printf("%s-",val2);
+							fin1=fin1+sizeof(val2);
+						}
+						if(atrib.tipo=='l')
+						{
+							fseek(arch,fin1,SEEK_SET);
+							fread(&val3,sizeof(long),1,arch);
+							printf("%ld-",val3);
+							fin1=fin1+sizeof(long);
+						}
+						if(atrib.tipo=='b')
+						{
+							fseek(arch,fin1,SEEK_SET);
+							fread(&val4,sizeof(bool),1,arch);
+							printf("%d-",val4);
+							fin1=fin1+sizeof(bool);
+						}
+						if(atrib.puntsig==-1)
+						{
+							break;
+						}
+					fseek(arch,atrib.puntsig,SEEK_SET);
+					}
+					fseek(arch,fin1,SEEK_SET);
+					fin1=ftell(arch);
+					fread(&fin,sizeof(long),1,arch);
+					arr[ta]=fin;
+					ta++;
+					printf("\n");
+				}
+				printf("Dame que elemento quieres eliminar:");
+				scanf("%d",&op);	
+			}
+			cab=entidad.puntsig;
+		}
 }
 
 void modifica_datos(FILE *arch,char enti[])
