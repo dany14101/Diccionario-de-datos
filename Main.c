@@ -205,11 +205,10 @@ void imprimir()
 						}
 						fseek(arch,atrib.puntsig,SEEK_SET);
 					}
+					fread(&fin,sizeof(long),1,arch);
 					printf("%ld",fin);
 					printf("\n");
 					fseek(arch,fin,SEEK_SET);
-					fread(&puntdat,sizeof(long),1,arch);
-					fin=puntdat;
 				}
 			}
 			else
@@ -911,6 +910,8 @@ void agrega_dato(FILE *arch,char enti[])
 						}
 						fseek(arch,atrib.puntsig,SEEK_SET);
 					}
+					fseek(arch,0,SEEK_END);
+					pos=ftell(arch);
 					fwrite(&constante,sizeof(long),1,arch);
 					fseek(arch,cab+offsetof(Enti,pundata),SEEK_SET);
 					fwrite(&ini,sizeof(long),1,arch);
