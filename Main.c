@@ -1226,7 +1226,7 @@ void modifica_datos(FILE *arch,char enti[])
 				}
 				printf("Dame que elemento quieres modificar:");
 				scanf("%d",&op);	
-				if(op==0&&ta-1==0)
+				if(op==0)
 				{
 					fseek(arch,entidad.puntatri,SEEK_SET);
 					prueb=entidad.pundata;
