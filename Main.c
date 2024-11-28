@@ -993,7 +993,7 @@ void agrega_dato(FILE *arch,char enti[])
 							
 							printf("Dame el valor entero:");
 							scanf("%s", val2);
-							fwrite(val2,sizeof(atrib.tam)+1,1,arch);
+							fwrite(val2,sizeof(val2)+1,1,arch);
 							
 						}
 						if(atrib.tipo=='l')
