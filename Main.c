@@ -1136,11 +1136,21 @@ void elimina_datos(FILE *arch,char enti[])
 				}
 				else
 				{
-					fseek(arch,arr[op],SEEK_SET);
-					fread(&ops,sizeof(long),1,arch);
-					fseek(arch,arr[op-1],SEEK_SET);
-					prueb=ftell(arch);
-					fwrite(&ops,sizeof(long),1,arch);
+					if(op>0)
+					{
+						fseek(arch,arr[op],SEEK_SET);
+						fread(&ops,sizeof(long),1,arch);
+						fseek(arch,arr[op-1],SEEK_SET);
+						prueb=ftell(arch);
+						fwrite(&ops,sizeof(long),1,arch);
+					}
+					else
+					{
+						fseek(arch,arr[op],SEEK_SET);
+						fread(&ops,sizeof(long),1,arch);
+						fseek(arch,cab+offsetof(Enti,pundata),SEEK_SET);
+						fwrite(&ops,sizeof(long),1,arch);
+					}
 					return;
 				}
 			}
