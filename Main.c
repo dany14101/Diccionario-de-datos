@@ -849,7 +849,7 @@ void agrega_dato(FILE *arch,char enti[])
 	long val3;
 	bool val4;
 //
-	long cab,valant=-1,pos,ini,aux,fin,fin1,constante=-1;
+	long cab,valant=-1,pos,ini,aux,fin,fin1,constante=-1,cont;
 	Atri atrib;
 	Enti entidad;
 	fseek(arch, 0, SEEK_SET);
@@ -962,7 +962,9 @@ void agrega_dato(FILE *arch,char enti[])
 						}
 						fseek(arch,fin1,SEEK_SET);
 						fin1=ftell(arch);
+						cont=fin1;
 						fread(&fin,sizeof(long),1,arch);
+						fin1=fin;
 					}
 					//Pega el dato
 					fseek(arch,0,SEEK_END);
@@ -1019,7 +1021,7 @@ void agrega_dato(FILE *arch,char enti[])
 					}
 					fseek(arch,0,SEEK_END);
 					fwrite(&constante,sizeof(long),1,arch);
-					fseek(arch,fin1,SEEK_SET);
+					fseek(arch,cont,SEEK_SET);
 					fwrite(&ini,sizeof(long),1,arch);
 					fflush(arch);
                		return;
@@ -1029,7 +1031,7 @@ void agrega_dato(FILE *arch,char enti[])
 		}
 		fflush(stdin);
 }
-//Se tiene que llamar dos veces cuando se ejecuta el programa
+
 void elimina_datos(FILE *arch,char enti[])
 {
 	//Variables para el primer caso 
