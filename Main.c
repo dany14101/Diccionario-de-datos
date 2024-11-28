@@ -558,19 +558,19 @@ void agrega_atri(FILE *arch,char atri[],char enti[])
 	scanf("%s",&nueva.tipo);
 	if(nueva.tipo!='c')
 	{
-		if(nueva.tipo!='i')
-		{
-		nueva.tam=4/2;
-		}
-		if(nueva.tipo!='f')
+		if(nueva.tipo=='i')
 		{
 		nueva.tam=4;
 		}
-		if(nueva.tipo!='l')
+		if(nueva.tipo=='f')
+		{
+		nueva.tam=4;
+		}
+		if(nueva.tipo=='l')
 		{
 		nueva.tam=8;
 		}
-		if(nueva.tipo!='b')
+		if(nueva.tipo=='b')
 		{
 		nueva.tam=8;
 		}
@@ -900,32 +900,32 @@ void agrega_dato(FILE *arch,char enti[])
 						pos=ftell(arch);
 						if(atrib.tipo=='i')
 						{
-							printf("Dame el valor entero:");
+							printf("Dame el valor entero %s:",atrib.nom);
 							scanf("%d",&val);
 							fwrite(&val,sizeof(int),1,arch);
 						}
 						if(atrib.tipo=='f')
 						{
-							printf("Dame el valor flotante:");
+							printf("Dame el valor flotante %s:",atrib.nom);
 							scanf("%f",&val1);
 							fwrite(&val1,sizeof(float),1,arch);
 						}
 						if(atrib.tipo=='c')
 						{
-							printf("Dame el valor de cadena:");
+							printf("Dame el valor de cadena %s:",atrib.nom);
 							scanf("%s", val2);
 							fwrite(val2,sizeof(val2),1,arch);
 						}
 						if(atrib.tipo=='l')
 						{
-							printf("Dame el valor long:");
+							printf("Dame el valor long %s:",atrib.nom);
 							scanf("%ld",&val3);
 							fwrite(&val3,sizeof(long),1,arch);
 							
 						}
 						if(atrib.tipo=='b')
 						{
-							printf("Dame el valor booleano 1 o 0:");
+							printf("Dame el valor booleano 1 o 0 %s:",atrib.nom);
 							scanf("%d",&op);
 							val4=(op==1);
 							fwrite(&val4,sizeof(bool),1,arch);
