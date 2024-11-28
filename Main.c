@@ -371,6 +371,7 @@ void men_dat(FILE *arch)
 			modifica_datos(arch,nom);
 			break;
 		case 4:
+			fclose(arch);
 			main();
 			break;
 		}
@@ -1028,7 +1029,7 @@ void agrega_dato(FILE *arch,char enti[])
 		}
 		fflush(stdin);
 }
-
+//Se tiene que llamar dos veces cuando se ejecuta el programa
 void elimina_datos(FILE *arch,char enti[])
 {
 	//Variables para el primer caso 
@@ -1040,7 +1041,7 @@ void elimina_datos(FILE *arch,char enti[])
 	long arr[200];
 	bool val4;
 //
-	long cab,valant=-1,pos,ini,aux,fin,fin1,constante=-1;
+	long cab,valant=-1,pos,ini,aux,fin,fin1,constante=-1,ops;
 	Atri atrib;
 	Enti entidad;
 	fseek(arch, 0, SEEK_SET);
@@ -1117,9 +1118,14 @@ void elimina_datos(FILE *arch,char enti[])
 					ta++;
 					printf("\n");
 				}
+				if(ta==0)
+				{
+					printf("No tiene datos para eliminar\n");
+					return;
+				}
 				printf("Dame que elemento quieres eliminar:");
 				scanf("%d",&op);	
-				if(op==0&&ta-1==0)
+				if(op==0&&ta==1)
 				{
 					fseek(arch,cab+offsetof(Enti,pundata),SEEK_SET);
 					prueb=ftell(arch);
@@ -1128,8 +1134,11 @@ void elimina_datos(FILE *arch,char enti[])
 				}
 				else
 				{
+					fseek(arch,arr[op],SEEK_SET);
+					fread(&ops,sizeof(long),1,arch);
 					fseek(arch,arr[op-1],SEEK_SET);
-					fwrite(&arr[op],sizeof(long),1,arch);
+					prueb=ftell(arch);
+					fwrite(&ops,sizeof(long),1,arch);
 					return;
 				}
 			}
