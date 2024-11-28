@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdbool.h>
 //Estructuras tiene un relleno de 6 bytes
@@ -71,7 +72,7 @@ int main()
 				imprimir();
 				break;
 			case 4:
-				return(1);
+				exit(1);
 		}
 		
 	}
@@ -280,7 +281,7 @@ void men_ent(FILE *arch)
 		printf("1. Agregar entidad\n");
 		printf("2. Eliminar entidad\n");
 		printf("3. Cambiar nombre entidad\n");
-		printf("4. Modificar entidad\n");
+		printf("4. Modificar atributos de la entidad\n");
 		printf("5. volver al menu\n");
 		printf("Dame que opcion quieres:");
 		scanf("%d",&op);
@@ -553,10 +554,32 @@ void agrega_atri(FILE *arch,char atri[],char enti[])
 	{
 		nueva.prymary=false;
 	}
-	printf("Dame el tipo:");
+	printf("Dame el tipo i,f,c,l,b:");
 	scanf("%s",&nueva.tipo);
+	if(nueva.tipo!='c')
+	{
+		if(nueva.tipo!='i')
+		{
+		nueva.tam=4/2;
+		}
+		if(nueva.tipo!='f')
+		{
+		nueva.tam=4;
+		}
+		if(nueva.tipo!='l')
+		{
+		nueva.tam=8;
+		}
+		if(nueva.tipo!='b')
+		{
+		nueva.tam=8;
+		}
+	}
+	else
+	{
 	printf("Dame el tamaño:");
 	scanf("%d",&nueva.tam);
+	}
 	nueva.puntsig=-1;
 	fseek(arch, 0, SEEK_SET);
 	fread(&cab,sizeof(long),1,arch);
@@ -976,14 +999,14 @@ void agrega_dato(FILE *arch,char enti[])
 						pos=ftell(arch);
 						if(atrib.tipo=='i')
 						{
-							printf("Dame el valor entero:");
+							printf("Dame el valor entero %s:",atrib.nom);
 							scanf("%d",&val);
 							fwrite(&val,sizeof(int),1,arch);
 						}
 						if(atrib.tipo=='f')
 						{
 				
-							printf("Dame el valor flotante:");
+							printf("Dame el valor flotante %s:",atrib.nom);
 							scanf("%f",&val1);
 							fwrite(&val1,sizeof(float),1,arch);
 							
@@ -991,15 +1014,15 @@ void agrega_dato(FILE *arch,char enti[])
 						if(atrib.tipo=='c')
 						{
 							
-							printf("Dame el valor entero:");
+							printf("Dame el valor cadena %s:",atrib.nom);
 							scanf("%s", val2);
-							fwrite(val2,sizeof(val2)+1,1,arch);
+							fwrite(val2,sizeof(val2),1,arch);
 							
 						}
 						if(atrib.tipo=='l')
 						{
 							
-							printf("Dame el valor long:");
+							printf("Dame el valor long %s:",atrib.nom);
 							scanf("%ld",&val3);
 							fwrite(&val3,sizeof(long),1,arch);
 							
@@ -1007,7 +1030,7 @@ void agrega_dato(FILE *arch,char enti[])
 						if(atrib.tipo=='b')
 						{
 							
-							printf("Dame el valor booleano 1 o 0:");
+							printf("Dame el valor booleano 1 o 0 %s:",atrib.nom);
 							scanf("%d",&op);
 							val4=(op==1);
 							fwrite(&val4,sizeof(bool),1,arch);
@@ -1259,35 +1282,35 @@ void modifica_datos(FILE *arch,char enti[])
 						pos=ftell(arch);
 						if(atrib.tipo=='i')
 						{
-							printf("Dame el valor entero:");
+							printf("Dame el valor entero %s:",atrib.nom);
 							scanf("%d",&val);
 							fwrite(&val,sizeof(int),1,arch);
 							prueb=prueb+sizeof(int);
 						}
 						if(atrib.tipo=='f')
 						{
-							printf("Dame el valor flotante:");
+							printf("Dame el valor flotante %s:",atrib.nom);
 							scanf("%f",&val1);
 							fwrite(&val1,sizeof(float),1,arch);
 							prueb=prueb+sizeof(float);
 						}
 						if(atrib.tipo=='c')
 						{
-							printf("Dame el valor cadena:");
+							printf("Dame el valor cadena %s:",atrib.nom);
 							scanf("%s", val2);
 							fwrite(val2,sizeof(val2),1,arch);
 							prueb=prueb+sizeof(val2);
 						}
 						if(atrib.tipo=='l')
 						{
-							printf("Dame el valor long:");
+							printf("Dame el valor long %s:",atrib.nom);
 							scanf("%ld",&val3);
 							fwrite(&val3,sizeof(long),1,arch);
 							prueb=prueb+sizeof(long);
 						}
 						if(atrib.tipo=='b')
 						{
-							printf("Dame el valor booleano 1 o 0:");
+							printf("Dame el valor booleano 1 o 0 %s:",atrib.nom);
 							scanf("%d",&op);
 							val4=(op==1);
 							fwrite(&val4,sizeof(bool),1,arch);
@@ -1312,7 +1335,7 @@ void modifica_datos(FILE *arch,char enti[])
 						pos=ftell(arch);
 						if(atrib.tipo=='i')
 						{
-							printf("Dame el valor entero:");
+							printf("Dame el valor entero %s:",atrib.nom);
 							scanf("%d",&val);
 							fwrite(&val,sizeof(int),1,arch);
 							prueb=prueb+sizeof(int);
@@ -1320,7 +1343,7 @@ void modifica_datos(FILE *arch,char enti[])
 						if(atrib.tipo=='f')
 						{
 				
-							printf("Dame el valor flotante:");
+							printf("Dame el valor flotante %s:",atrib.nom);
 							scanf("%f",&val1);
 							fwrite(&val1,sizeof(float),1,arch);
 							prueb=prueb+sizeof(float);
@@ -1328,7 +1351,7 @@ void modifica_datos(FILE *arch,char enti[])
 						if(atrib.tipo=='c')
 						{
 							
-							printf("Dame el valor entero:");
+							printf("Dame el valor cadena %s:",atrib.nom);
 							scanf("%s", val2);
 							fwrite(val2,sizeof(val2),1,arch);
 							prueb=prueb+sizeof(val2);
@@ -1336,14 +1359,14 @@ void modifica_datos(FILE *arch,char enti[])
 						if(atrib.tipo=='l')
 						{
 							
-							printf("Dame el valor long:");
+							printf("Dame el valor long %s:",atrib.nom);
 							scanf("%ld",&val3);
 							fwrite(&val3,sizeof(long),1,arch);
 							prueb=prueb+sizeof(long);
 						}
 						if(atrib.tipo=='b')
 						{
-							printf("Dame el valor booleano 1 o 0:");
+							printf("Dame el valor booleano 1 o 0 %s:",atrib.nom);
 							scanf("%d",&op);
 							val4=(op==1);
 							fwrite(&val4,sizeof(bool),1,arch);
