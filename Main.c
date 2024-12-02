@@ -799,10 +799,32 @@ void modifica_atri(FILE *arch,char atri[],char enti[])
 	{
 		nuevoatri.prymary=false;
 	}
-	printf("Dame el tipo:");
+	printf("Dame el tipo i,f,c,l,b:");
 	scanf("%s",&nuevoatri.tipo);
+	if(nuevoatri.tipo!='c')
+	{
+		if(nuevoatri.tipo=='i')
+		{
+		nuevoatri.tam=4;
+		}
+		if(nuevoatri.tipo=='f')
+		{
+		nuevoatri.tam=4;
+		}
+		if(nuevoatri.tipo=='l')
+		{
+		nuevoatri.tam=8;
+		}
+		if(nuevoatri.tipo=='b')
+		{
+		nuevoatri.tam=8;
+		}
+	}
+	else
+	{
 	printf("Dame el tamaño:");
-	scanf("%d",&nuevoatri.tam);
+	scanf("%d",&nueva.tam);
+	}
 	nuevoatri.puntsig=-1;
 	nueva.prymary=false;
 	nueva.tam=0;
