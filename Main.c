@@ -37,6 +37,7 @@ void agrega_enti(FILE *arch,char nom[]);
 void elimina_enti(FILE *arch,char nom[]);
 void cambnom_enti(FILE *arch,char nom[]);
 void modifica_enti(FILE *arch,char nom[]);
+void agrega_enticmb(FILE *arch,char nom[],Enti act);
 //Funciones de atributos
 void agrega_atri(FILE *arch,char atri[],char enti[]);
 void elimina_atri(FILE *arch,char atri[],char enti[]);
@@ -473,7 +474,6 @@ void elimina_enti(FILE *arch,char nom[])
 			fseek(arch,valant+offsetof(Enti,puntsig),SEEK_SET);
 			fwrite(&sig,sizeof(long),1,arch);
 			}
-			printf("Entidad eliminada\n");
 			return;
 		}
 		if(entidad.puntsig==-1)
@@ -490,48 +490,116 @@ void elimina_enti(FILE *arch,char nom[])
 }
 
 //Imprime Enti
-void cambnom_enti(FILE *arch,char nom[])
-{
-	int op=0;
-	char vacio[50]="",nuev[50];
-	Enti entidad,act;
-	long val,valant=-1,pos,sig,cab;
-	printf("Dame el nombre que le quieres cambiar a la entidad:");
-	scanf("%s",nuev);
-	fseek(arch,0,SEEK_SET);
-	fread(&cab,sizeof(long),1,arch);
-	if(cab==-1)
-	{
-		printf("El diccionario esta vacio\n");
-	}
-	fseek(arch,cab,SEEK_SET);
-	while(fread(&entidad,sizeof(Enti),1,arch)==1)
-	{
-		if(strcmp(entidad.nom,nom)==0)
-		{
-			op=1;
-			fseek(arch,cab,SEEK_SET);
-			fwrite(vacio,sizeof(vacio),1,arch);
-			fseek(arch,cab,SEEK_SET);
-			fwrite(nuev,sizeof(nuev),1,arch);
-			return;
-		}
-		if(entidad.puntsig==-1)
-		{
-			break;
-		}
-		valant=ftell(arch)-sizeof(Enti);
-		fseek(arch,entidad.puntsig,SEEK_SET);
-	}
-	if(op==0)
-	{
-		printf("No esta la entidad que quieres modificar\n\n");
-	}
+void cambnom_enti(FILE *arch, char nom[]) {
+    int op = 0;
+    char vacio[50] = "", nuev[50];
+    Enti entidad, act;
+    long valant = -1, cab;
+    
+    printf("Dame el nombre que le quieres cambiar a la entidad: ");
+    scanf("%s", nuev);
+    
+    // Leer la cabecera
+    fseek(arch, 0, SEEK_SET);
+    fread(&cab, sizeof(long), 1, arch);
+    
+    if (cab == -1) {
+        printf("El diccionario está vacío\n");
+        return;
+    }
+
+    fseek(arch, cab, SEEK_SET);
+    valant = cab;
+
+    while (fread(&entidad, sizeof(Enti), 1, arch) == 1) {
+        if (strcmp(entidad.nom, nom) == 0) {
+            op = 1;
+            // Actualizar el nombre de la entidad
+            strcpy(act.nom, nuev);
+            act.pundata = entidad.pundata;
+            act.puntatri = entidad.puntatri;
+            
+            // Eliminar la entidad existente
+            elimina_enti(arch, entidad.nom);
+            
+            // Agregar la nueva entidad con el nombre actualizado
+            agrega_enticmb(arch, nom, act);
+            return;
+        }
+
+        if (entidad.puntsig == -1) {
+            break;
+        }
+        
+        valant = ftell(arch) - sizeof(Enti);
+        fseek(arch, entidad.puntsig, SEEK_SET);
+    }
+
+    if (op == 0) {
+        printf("No está la entidad que quieres modificar\n\n");
+    }
 }
 
+void agrega_enticmb(FILE *arch, char nom[], Enti act) {
+    long puntf = -1, val, valant, pos;
+    Enti entidad, nueva;
+    
+    strcpy(nueva.nom, act.nom);
+    nueva.pundata = act.pundata;
+    nueva.puntatri = act.puntatri;
+    nueva.puntsig = -1;
+    
+    fseek(arch, 0, SEEK_SET);
+    fread(&val, sizeof(long), 1, arch);
+    
+    if (val == -1) {
+        // Si el diccionario está vacío, agregamos la primera entidad
+        fseek(arch, 0, SEEK_END);
+        pos = ftell(arch);
+        fwrite(&nueva, sizeof(Enti), 1, arch);
+        fseek(arch, 0, SEEK_SET);
+        fwrite(&pos, sizeof(long), 1, arch);
+        fflush(arch);
+        return;
+    } else {
+        valant = -1;
+        while (val != -1) {
+            fseek(arch, val, SEEK_SET);
+            fread(&entidad, sizeof(Enti), 1, arch);
+            
+            if (strcmp(nom, entidad.nom) < 0) {
+                fseek(arch, 0, SEEK_END);
+                pos = ftell(arch);
+                nueva.puntsig = val;
+                fwrite(&nueva, sizeof(Enti), 1, arch);
+                
+                if (valant == -1) {
+                    fseek(arch, 0, SEEK_SET);
+                    fwrite(&pos, sizeof(long), 1, arch);
+                } else {
+                    fseek(arch, valant + offsetof(Enti, puntsig), SEEK_SET);
+                    fwrite(&pos, sizeof(long), 1, arch);
+                }
+                fflush(arch);
+                return;
+            }
 
+            valant = val;
+            val = entidad.puntsig;
+        }
+    }
 
-
+    fseek(arch, 0, SEEK_END);
+    pos = ftell(arch);
+    fwrite(&nueva, sizeof(Enti), 1, arch);
+    
+    if (valant != -1) {
+        fseek(arch, valant + offsetof(Enti, puntsig), SEEK_SET);
+        fwrite(&pos, sizeof(long), 1, arch);
+    }
+    
+    fflush(arch);
+}
 //Funciones de atributos
 
 //Agrega atributo
@@ -788,8 +856,11 @@ void modifica_atri(FILE *arch,char atri[],char enti[])
 	printf("Dame el nombre:");
 	scanf("%s",nuevoatri.nom);
 	fflush(stdin);
+	while(val!=0&&val!=1)
+	{
 	printf("Dame el valor boleano 1 o 0:");
 	scanf("%d",&val);
+	}
 	if(val==1&&v==0)
 	{
 		v=1;
@@ -799,6 +870,8 @@ void modifica_atri(FILE *arch,char atri[],char enti[])
 	{
 		nuevoatri.prymary=false;
 	}
+	while(nuevoatri.tipo!='c'&&nuevoatri.tipo!='i'&&nuevoatri.tipo!='f'&&nuevoatri.tipo!='l'&&nuevoatri.tipo!='b')
+	{
 	printf("Dame el tipo i,f,c,l,b:");
 	scanf("%s",&nuevoatri.tipo);
 	if(nuevoatri.tipo!='c')
@@ -824,6 +897,7 @@ void modifica_atri(FILE *arch,char atri[],char enti[])
 	{
 	printf("Dame el tamaño:");
 	scanf("%d",&nueva.tam);
+	}
 	}
 	nuevoatri.puntsig=-1;
 	nueva.prymary=false;
@@ -1292,8 +1366,11 @@ void modifica_datos(FILE *arch,char enti[])
 					ta++;
 					printf("\n");
 				}
+				while(op<0&&op>ta)
+				{
 				printf("Dame que elemento quieres modificar:");
-				scanf("%d",&op);	
+				scanf("%d",&op);
+				}	
 				if(op==0)
 				{
 					fseek(arch,entidad.puntatri,SEEK_SET);
