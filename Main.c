@@ -1282,7 +1282,7 @@ void modifica_datos(FILE *arch,char enti[])
 {
 	//Variables para el primer caso 
 	Atri aux3;
-	int val,op,ta=0;
+	int val,op=0,ta=0;
 	float val1;
 	char val2[120]="";
 	long val3,prueb;
@@ -1366,11 +1366,8 @@ void modifica_datos(FILE *arch,char enti[])
 					ta++;
 					printf("\n");
 				}
-				while(op<0&&op>ta)
-				{
 				printf("Dame que elemento quieres modificar:");
 				scanf("%d",&op);
-				}	
 				if(op==0)
 				{
 					fseek(arch,entidad.puntatri,SEEK_SET);
